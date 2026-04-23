@@ -1,0 +1,432 @@
+{
+  "code": 200,
+  "request_id": "5c78eaa7-53d6-4d9c-a8fb-a071050645f5",
+  "message": "Request successful. This request will incur a charge.",
+  "message_zh": "请求成功，本次请求将被计费。",
+  "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+  "time": "2026-04-19 00:38:18",
+  "time_stamp": 1776584298,
+  "time_zone": "America/Los_Angeles",
+  "docs": "https://api.tikhub.io/#/Xiaohongshu-App-API/get_note_info_v1_api_v1_xiaohongshu_app_get_note_info_get",
+  "cache_message": "This request will be cached. You can access the cached result directly using the URL below, valid for 24 hours. Accessing the cache will not incur additional charges.",
+  "cache_message_zh": "本次请求将被缓存，你可以使用下面的 URL 直接访问缓存结果，有效期为 24 小时，访问缓存不会产生额外费用。",
+  "cache_url": "https://cache.tikhub.io/api/v1/cache/public/5c78eaa7-53d6-4d9c-a8fb-a071050645f5?sign=63cf01912f93eaa3a45e857bb3e7fa84e08b271b43d4c4891056146241f2b427",
+  "router": "/api/v1/xiaohongshu/app/get_note_info",
+  "params": {
+    "note_id": "69cbc340000000001a02329e"
+  },
+  "data": {
+    "code": 0,
+    "success": true,
+    "message": "成功",
+    "data": [
+      {
+        "track_id": "",
+        "model_type": "note",
+        "user": {
+          "id": "5b6672072253240001fdb2c2",
+          "image": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mpff0866g6g4a9g0ip0fcm22ifd9n8?imageView2/2/w/120/format/jpg",
+          "followed": false,
+          "show_red_official_verify_icon": false,
+          "red_official_verified": false,
+          "userid": "5b6672072253240001fdb2c2",
+          "level": {
+            "image": ""
+          },
+          "name": "PaperBox",
+          "red_id": "800974302",
+          "nickname": "PaperBox",
+          "red_official_verify_type": 0,
+          "track_duration": 0,
+          "fstatus": "none"
+        },
+        "note_list": [
+          {
+            "model_type": "note",
+            "id": "69cbc340000000001a02329e",
+            "type": "normal",
+            "title": "nanorllm开源 agentic RL 最核心的训练闭环",
+            "widgets_groups": [
+              [
+                "guos_test",
+                "note_next_step",
+                "second_jump_bar",
+                "cooperate_binds",
+                "note_collection",
+                "rec_next_infos",
+                "image_stickers",
+                "image_filters",
+                "product_review",
+                "related_search",
+                "cooperate_comment_component",
+                "image_goods_cards",
+                "ads_goods_cards",
+                "ads_comment_component",
+                "goods_card_v2",
+                "image_template",
+                "buyable_goods_card_v2",
+                "ads_engage_bar",
+                "challenge_card",
+                "cooperate_engage_bar",
+                "guide_post",
+                "pgy_comment_component",
+                "pgy_engage_bar",
+                "bar_below_image",
+                "aigc_collection",
+                "co_produce",
+                "widgets_ndb",
+                "next_note_guide",
+                "pgy_bbc_exp",
+                "async_group",
+                "super_activity",
+                "widgets_enhance",
+                "music_player",
+                "soundtrack_player"
+              ],
+              [
+                "guos_test",
+                "vote_stickers",
+                "bullet_comment_lead",
+                "note_search_box",
+                "interact_pk",
+                "interact_vote",
+                "guide_heuristic",
+                "share_to_msg",
+                "follow_guide",
+                "note_share_prompt_v1",
+                "sync_group",
+                "group_share",
+                "share_guide_bubble",
+                "widgets_share",
+                "guide_navigator"
+              ]
+            ],
+            "cooperate_binds": [],
+            "countdown": 0,
+            "images_list": [
+              {
+                "scale_to_large": 4,
+                "trace_id": "1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988",
+                "latitude": 0,
+                "need_load_original_image": true,
+                "text_intention": 0,
+                "origin_img": {
+                  "size": 0,
+                  "width": 1448,
+                  "height": 1496
+                },
+                "fileid": "1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988",
+                "height": 1496,
+                "longitude": 0,
+                "url_multi_level": {
+                  "low": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=600ea6a67bb3cb2b6eb6709796234e25&t=69e4866a&origin=0",
+                  "medium": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=600ea6a67bb3cb2b6eb6709796234e25&t=69e4866a&origin=0",
+                  "high": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=600ea6a67bb3cb2b6eb6709796234e25&t=69e4866a&origin=0"
+                },
+                "index": 0,
+                "width": 1448,
+                "url": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/1440/format/heif/q/45&redImage/frame/0&ap=1&sc=DETAIL&sign=600ea6a67bb3cb2b6eb6709796234e25&t=69e4866a&origin=0",
+                "original": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/5000/h/5000/format/heif/q/56&redImage/frame/0&ap=1&sc=ORIGINAL&sign=600ea6a67bb3cb2b6eb6709796234e25&t=69e4866a&origin=0"
+              },
+              {
+                "url": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0?imageView2/2/w/1440/format/heif/q/45&redImage/frame/0&ap=1&sc=DETAIL&sign=e79b6da0317138d65e00b102b04a484b&t=69e4866a&origin=0",
+                "index": 0,
+                "width": 2536,
+                "original": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0?imageView2/2/w/5000/h/5000/format/heif/q/56&redImage/frame/0&ap=1&sc=ORIGINAL&sign=e79b6da0317138d65e00b102b04a484b&t=69e4866a&origin=0",
+                "url_multi_level": {
+                  "low": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=e79b6da0317138d65e00b102b04a484b&t=69e4866a&origin=0",
+                  "medium": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=e79b6da0317138d65e00b102b04a484b&t=69e4866a&origin=0",
+                  "high": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=e79b6da0317138d65e00b102b04a484b&t=69e4866a&origin=0"
+                },
+                "longitude": 0,
+                "need_load_original_image": true,
+                "scale_to_large": 4,
+                "text_intention": 0,
+                "fileid": "1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0",
+                "origin_img": {
+                  "size": 0,
+                  "width": 2536,
+                  "height": 1796
+                },
+                "latitude": 0,
+                "trace_id": "1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0",
+                "height": 1796
+              },
+              {
+                "height": 1192,
+                "latitude": 0,
+                "url": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8?imageView2/2/w/1440/format/heif/q/45&redImage/frame/0&ap=1&sc=DETAIL&sign=faee8ca3367e2b2799b41faafcc74634&t=69e4866a&origin=0",
+                "width": 2064,
+                "longitude": 0,
+                "trace_id": "1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8",
+                "index": 0,
+                "need_load_original_image": true,
+                "scale_to_large": 4,
+                "text_intention": 0,
+                "origin_img": {
+                  "height": 1192,
+                  "size": 0,
+                  "width": 2064
+                },
+                "fileid": "1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8",
+                "original": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8?imageView2/2/w/5000/h/5000/format/heif/q/56&redImage/frame/0&ap=1&sc=ORIGINAL&sign=faee8ca3367e2b2799b41faafcc74634&t=69e4866a&origin=0",
+                "url_multi_level": {
+                  "low": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=faee8ca3367e2b2799b41faafcc74634&t=69e4866a&origin=0",
+                  "medium": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=faee8ca3367e2b2799b41faafcc74634&t=69e4866a&origin=0",
+                  "high": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8?imageView2/2/w/1440/format/heif/q/75&redImage/frame/0&ap=1&sc=DETAIL&sign=faee8ca3367e2b2799b41faafcc74634&t=69e4866a&origin=0"
+                }
+              }
+            ],
+            "last_update_time": 0,
+            "seeded_count": 0,
+            "co_produce_link": "xhsdiscover://post_new_note?source=%7B%22type%22%3A%22together_post%22%2C%22extraInfo%22%3A%7B%22subType%22%3A%22together_post_halfspace%22%2C%22track_id%22%3A%2269cbc340000000001a02329e%22%7D%7D&page=%7B%22page_type%22%3A%22image_co_produce_album%22%7D",
+            "need_next_step": false,
+            "media_save_config": {
+              "disable_save": false,
+              "disable_watermark": false,
+              "disable_weibo_cover": false
+            },
+            "hash_tag": [
+              {
+                "type": "topic",
+                "link": "xhsdiscover://rn/sns-discover/topic/normal?id=629a03d58d87280001904afc&page_source=note_feed.click_new_big&topic_name=AGENT&source=normal&pre_source=explore",
+                "record_emoji": "",
+                "record_unit": "",
+                "current_score": 0,
+                "id": "629a03d500000000010055c7",
+                "name": "AGENT",
+                "record_count": 0,
+                "bizId": "",
+                "tag_hint": ""
+              },
+              {
+                "id": "68ad8df3000000000600e306",
+                "name": "AgenticRL",
+                "record_emoji": "",
+                "record_unit": "",
+                "bizId": "",
+                "tag_hint": "",
+                "type": "topic",
+                "link": "xhsdiscover://rn/sns-discover/topic/normal?id=68ad8df30063000000000002&page_source=note_feed.click_new_big&topic_name=AgenticRL&source=normal&pre_source=explore",
+                "record_count": 0,
+                "current_score": 0
+              },
+              {
+                "current_score": 0,
+                "bizId": "",
+                "tag_hint": "",
+                "name": "强化学习",
+                "record_emoji": "",
+                "record_count": 0,
+                "record_unit": "",
+                "id": "610dfdd40000000001006323",
+                "type": "topic",
+                "link": "xhsdiscover://rn/sns-discover/topic/normal?id=610dfdd43756fe0001bdc610&page_source=note_feed.click_new_big&topic_name=%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0&source=normal&pre_source=explore"
+              },
+              {
+                "id": "65c202d80000000013017081",
+                "name": "GRPO",
+                "record_count": 0,
+                "record_unit": "",
+                "current_score": 0,
+                "bizId": "",
+                "tag_hint": "",
+                "type": "topic",
+                "link": "xhsdiscover://rn/sns-discover/topic/normal?id=65c202d8940770000196e024&page_source=note_feed.click_new_big&topic_name=GRPO&source=normal&pre_source=explore",
+                "record_emoji": ""
+              },
+              {
+                "id": "601b709500000000010080ca",
+                "name": "开源项目",
+                "record_emoji": "",
+                "record_count": 0,
+                "record_unit": "",
+                "current_score": 0,
+                "type": "topic",
+                "link": "xhsdiscover://rn/sns-discover/topic/normal?id=601b7096a95cb00001705dc7&page_source=note_feed.click_new_big&topic_name=%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE&source=normal&pre_source=explore",
+                "bizId": "",
+                "tag_hint": ""
+              },
+              {
+                "tag_hint": "",
+                "id": "624d11eb000000000101e223",
+                "name": "大模型",
+                "record_count": 0,
+                "bizId": "",
+                "current_score": 0,
+                "type": "topic",
+                "link": "xhsdiscover://rn/sns-discover/topic/normal?id=624d11ebc9ac6000015f0cf2&page_source=note_feed.click_new_big&topic_name=%E5%A4%A7%E6%A8%A1%E5%9E%8B&source=normal&pre_source=explore",
+                "record_emoji": "",
+                "record_unit": ""
+              },
+              {
+                "id": "68d7d4640000000012018ecb",
+                "link": "xhsdiscover://rn/sns-discover/topic/immersive?id=68d7d4640126000000000001&page_source=note_feed.click_new_big&topic_name=%E5%B0%8F%E7%BA%A2%E4%B9%A6%E7%A7%91%E6%8A%80AMA&source=normal&pre_source=explore",
+                "record_count": 0,
+                "record_unit": "",
+                "tag_hint": "",
+                "name": "小红书科技AMA",
+                "type": "topic",
+                "record_emoji": "",
+                "current_score": 0,
+                "bizId": ""
+              }
+            ],
+            "need_product_review": false,
+            "widgets_context": "{\"flags\":{},\"author_id\":\"5b6672072253240001fdb2c2\",\"author_name\":\"PaperBox\",\"q_task_id\":\"\",\"video_rec_bar_info\":\"\"}",
+            "content_trans_info": {
+              "strategy": 10
+            },
+            "view_count": 0,
+            "enable_fls_bridge_cards": false,
+            "goods_info": {},
+            "collected_count": 883,
+            "seeded": false,
+            "topics": [
+              {
+                "name": "AGENT",
+                "image": "http://ci.xiaohongshu.com/fd75707a-37f8-45ad-b7a7-0feaf36e9cad@r_120w_120h.jpg",
+                "link": "xhsdiscover://topic/v2/629a03d58d87280001904afc?page_source=note_feed.click_new_big",
+                "activity_online": false,
+                "style": 0,
+                "discuss_num": 0,
+                "business_type": 0,
+                "id": "629a03d500000000010055c7"
+              }
+            ],
+            "share_code_flag": 0,
+            "api_upgrade": -1,
+            "user": {
+              "image": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mpff0866g6g4a9g0ip0fcm22ifd9n8?imageView2/2/w/120/format/jpg",
+              "red_id": "800974302",
+              "red_official_verified": false,
+              "fstatus": "none",
+              "id": "5b6672072253240001fdb2c2",
+              "name": "PaperBox",
+              "red_official_verify_type": 0,
+              "show_red_official_verify_icon": false,
+              "userid": "5b6672072253240001fdb2c2",
+              "track_duration": 0,
+              "level": {
+                "image": ""
+              },
+              "followed": false,
+              "nickname": "PaperBox"
+            },
+            "collected": false,
+            "mini_program_info": {
+              "share_title": "@PaperBox 发了一篇笔记，快点来看吧！",
+              "user_name": "gh_52be748ce5b7",
+              "path": "pages/main/home/index?redirect_path=%2Fpages%2Fmain%2Fnote%2Findex%3Fxsec_source%3Dapp_share%26id%3D69cbc340000000001a02329e%26type%3Dnormal%26xsec_token%3DCBiTHYZKU8j_P0IopFroDOe3ZNtCdLVjEfsSS7fDyBE4g%3D",
+              "title": "@PaperBox 发了一篇笔记，快点来看吧！",
+              "desc": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像",
+              "webpage_url": "https://www.xiaohongshu.com/discovery/item/69cbc340000000001a02329e?xsec_source=app_share&xsec_token=CBiTHYZKU8j_P0IopFroDOe3ZNtCdLVjEfsSS7fDyBE4g=",
+              "thumb": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/540/format/jpg/q/75"
+            },
+            "shared_count": 197,
+            "head_tags": [],
+            "ip_location": "浙江",
+            "enable_co_produce": true,
+            "biz_map": {},
+            "ats": [],
+            "liked_count": 546,
+            "long_press_share_info": {
+              "is_star": false,
+              "block_private_msg": false,
+              "show_wechat_tag": false,
+              "function_entries": [
+                {
+                  "type": "image_download"
+                }
+              ],
+              "guide_audited": false,
+              "content": "",
+              "title": ""
+            },
+            "enable_fls_related_cards": false,
+            "may_have_red_packet": false,
+            "has_co_produce": false,
+            "feedback_info": {
+              "dislike_status": 0
+            },
+            "comments_count": 51,
+            "in_censor": false,
+            "has_related_goods": false,
+            "has_music": false,
+            "function_switch": [
+              {
+                "type": "image_download",
+                "enable": true
+              }
+            ],
+            "desc": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像 multi-turn rollout、trajectory collection、grpo算法、trainer 这些环节，很多时候不是概念难，而是被埋在太重的系统里[失望R]\n\t\n[捂脸R]算是啃了一块硬骨头了吧，花了三周的时间，infra 太硬核了\n\t\nagentic rl 看起来很难，实际上确实难，但是只要有耐心 就不难[doge]\n\t\n项目在github已开源，下一步更新计划：\n[一R]off-policy\n[二R]使用工具的 env\n\t\n欢迎大佬们交流合作！\n\t\n#AGENT[话题]# #AgenticRL[话题]# #强化学习[话题]# #GRPO[话题]# #开源项目[话题]# #大模型[话题]# #小红书科技AMA[话题]#",
+            "privacy": {
+              "type": 0,
+              "show_tips": false,
+              "nick_names": ""
+            },
+            "liked_users": [],
+            "foot_tags": [],
+            "time": 1774961472,
+            "liked": false,
+            "sticky": false,
+            "enable_brand_lottery": false,
+            "red_envelope_note": false,
+            "text_language_code": "zh",
+            "share_info": {
+              "show_wechat_tag": false,
+              "function_entries": [
+                {
+                  "type": "generate_image"
+                },
+                {
+                  "type": "copy_link"
+                },
+                {
+                  "type": "heat_for_author"
+                },
+                {
+                  "type": "dislike"
+                },
+                {
+                  "type": "report"
+                }
+              ],
+              "wechat_share_desc": "@PaperBox 的笔记\n197人分享",
+              "is_star": false,
+              "image": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/360/format/jpg/q/75",
+              "link": "https://www.xiaohongshu.com/discovery/item/69cbc340000000001a02329e?app_platform=android&ignoreEngage=true&app_version=9.20.0&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBiTHYZKU8j_P0IopFroDOe3ZNtCdLVjEfsSS7fDyBE4g=&author_share=1",
+              "title": "nanorllm开源 agentic RL 最核心的训练闭环",
+              "block_private_msg": false,
+              "guide_audited": true,
+              "content": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像"
+            },
+            "qq_mini_program_info": {
+              "title": "@PaperBox 发了一篇超赞的笔记，快点来看！",
+              "desc": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像",
+              "webpage_url": "https://www.xiaohongshu.com/discovery/item/69cbc340000000001a02329e?xsec_source=app_share&xsec_token=CBiTHYZKU8j_P0IopFroDOe3ZNtCdLVjEfsSS7fDyBE4g=",
+              "thumb": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/540/format/jpg/q/75",
+              "share_title": "@PaperBox 发了一篇超赞的笔记，快点来看！",
+              "user_name": "gh_66c53d495417",
+              "path": "pages/main/note/index?xsec_source=app_share&id=69cbc340000000001a02329e&type=normal&xsec_token=CBiTHYZKU8j_P0IopFroDOe3ZNtCdLVjEfsSS7fDyBE4g="
+            },
+            "use_water_color": false,
+            "note_text_press_options": [
+              {
+                "extra": "",
+                "key": "copy"
+              }
+            ],
+            "comment_prompt_config": {
+              "placeholder_short": "说点什么...",
+              "placeholder_long": "让大家听到你的声音",
+              "forbidden_cmt_type": 0
+            }
+          }
+        ],
+        "comment_list": []
+      }
+    ],
+    "version": "v1"
+  }
+}

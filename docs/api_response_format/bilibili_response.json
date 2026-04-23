@@ -1,0 +1,971 @@
+{
+  "code": 200,
+  "request_id": "3e58aba3-998d-4c73-9894-e4127814c2b8",
+  "message": "Request successful. This request will incur a charge.",
+  "message_zh": "请求成功，本次请求将被计费。",
+  "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+  "time": "2026-04-18 23:33:28",
+  "time_stamp": 1776580408,
+  "time_zone": "America/Los_Angeles",
+  "docs": "https://api.tikhub.io/#/Bilibili-Web-API/fetch_one_video_v3_api_v1_bilibili_web_fetch_one_video_v3_get",
+  "cache_message": "This request will be cached. You can access the cached result directly using the URL below, valid for 24 hours. Accessing the cache will not incur additional charges.",
+  "cache_message_zh": "本次请求将被缓存，你可以使用下面的 URL 直接访问缓存结果，有效期为 24 小时，访问缓存不会产生额外费用。",
+  "cache_url": "https://cache.tikhub.io/api/v1/cache/public/3e58aba3-998d-4c73-9894-e4127814c2b8?sign=5e07e01f91b0d8b357db4c7907596256617b18051876166265cf0e2aa34bdfa5",
+  "router": "/api/v1/bilibili/web/fetch_one_video_v3",
+  "params": {
+    "url": "https://www.bilibili.com/video/BV1L7Jvz4ENz/?spm_id_from=333.1387.favlist.content.click&vd_source=ba077cb5048f0562112e9d805ce8721f"
+  },
+  "data": {
+    "bvid": "BV1L7Jvz4ENz",
+    "aid": 114543254572895,
+    "videos": 52,
+    "tid": 231,
+    "tid_v2": 2096,
+    "tname": "",
+    "tname_v2": "",
+    "copyright": 1,
+    "pic": "http://i2.hdslb.com/bfs/archive/68525ec95cee01ff7f5c833bb15832fdbaef1c82.jpg",
+    "title": "从零构建知识图谱：迪哥手把手教你用知识图谱做医疗问答系统！零基础也能搞定（附完整代码）",
+    "pubdate": 1747793765,
+    "ctime": 1747792253,
+    "desc": "➤知识图谱配套课件+源码已经打包好了\n➤需要的同学 关注UP+下方留言",
+    "desc_v2": [
+      {
+        "raw_text": "➤知识图谱配套课件+源码已经打包好了\n➤需要的同学 关注UP+下方留言",
+        "type": 1,
+        "biz_id": 0
+      }
+    ],
+    "state": 0,
+    "duration": 33136,
+    "mission_id": 4033814,
+    "rights": {
+      "bp": 0,
+      "elec": 0,
+      "download": 1,
+      "movie": 0,
+      "pay": 0,
+      "hd5": 0,
+      "no_reprint": 1,
+      "autoplay": 1,
+      "ugc_pay": 0,
+      "is_cooperation": 0,
+      "ugc_pay_preview": 0,
+      "no_background": 0,
+      "clean_mode": 0,
+      "is_stein_gate": 0,
+      "is_360": 0,
+      "no_share": 0,
+      "arc_pay": 0,
+      "free_watch": 0
+    },
+    "owner": {
+      "mid": 1817715534,
+      "name": "迪哥的AI世界",
+      "face": "https://i0.hdslb.com/bfs/face/d8841e718816fdd440447815345dc87c2aebbf4e.jpg"
+    },
+    "stat": {
+      "aid": 114543254572895,
+      "view": 60449,
+      "danmaku": 57,
+      "reply": 2473,
+      "favorite": 2664,
+      "coin": 1821,
+      "share": 323,
+      "now_rank": 0,
+      "his_rank": 0,
+      "like": 1527,
+      "dislike": 0,
+      "evaluation": "",
+      "vt": 0,
+      "viewseo": 60449
+    },
+    "argue_info": {
+      "argue_msg": "",
+      "argue_type": 0,
+      "argue_link": ""
+    },
+    "dynamic": "",
+    "cid": 30066476761,
+    "dimension": {
+      "width": 1920,
+      "height": 1080,
+      "rotate": 0
+    },
+    "premiere": null,
+    "teenage_mode": 0,
+    "is_chargeable_season": false,
+    "is_story": false,
+    "is_upower_exclusive": false,
+    "is_upower_play": false,
+    "is_upower_preview": false,
+    "enable_vt": 0,
+    "vt_display": "",
+    "is_upower_exclusive_with_qa": false,
+    "no_cache": false,
+    "pages": [
+      {
+        "cid": 30066476761,
+        "page": 1,
+        "from": "vupload",
+        "part": "知识抽取实战",
+        "duration": 7697,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa1wicyid3wxz1c1hjbh5w2em_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477376,
+        "page": 2,
+        "from": "vupload",
+        "part": "初学者必备人工智能学习路线图",
+        "duration": 725,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa32xqrqlaw7ylb3sxrv8szpe_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477577,
+        "page": 3,
+        "from": "vupload",
+        "part": "1-知识图谱通俗解读",
+        "duration": 482,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1280,
+          "height": 720,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa3mwisvjexsm2cerkisac82g_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477711,
+        "page": 4,
+        "from": "vupload",
+        "part": "2-知识图谱在搜索引擎中的应用",
+        "duration": 489,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa264xnpt7qeng2y8nkhvbqqq_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477822,
+        "page": 5,
+        "from": "vupload",
+        "part": "3-知识图谱在医疗领域应用实例",
+        "duration": 805,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521saturkpwxj4gkp2toxuuxw0ed_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477612,
+        "page": 6,
+        "from": "vupload",
+        "part": "4-金融与推荐领域的应用",
+        "duration": 512,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa1xalohym15ro1rks77e79yi_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477815,
+        "page": 7,
+        "from": "vupload",
+        "part": "5-数据获取分析",
+        "duration": 621,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa22sf3qmiufexr28i0nm2db9_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477935,
+        "page": 8,
+        "from": "vupload",
+        "part": "1-数据关系抽取分析",
+        "duration": 515,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa2cyghy6t9m98w2gpjh6joro_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477878,
+        "page": 9,
+        "from": "vupload",
+        "part": "2-常用NLP技术点分析",
+        "duration": 507,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa1w9h84dstywp21swqm73y70_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477952,
+        "page": 10,
+        "from": "vupload",
+        "part": "3-graph-embedding的作用与效果",
+        "duration": 578,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521saddfob4cmv4cs1s7qu9y65d3_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478053,
+        "page": 11,
+        "from": "vupload",
+        "part": "4-金融领域图编码实例",
+        "duration": 271,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa3enrbzyf6qs3d2vfedh0uvm_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477962,
+        "page": 12,
+        "from": "vupload",
+        "part": "5-视觉领域图编码实例",
+        "duration": 439,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa1b9j94pbaimavlh50mwku6f_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066477976,
+        "page": 13,
+        "from": "vupload",
+        "part": "6-图谱知识融合与总结分析",
+        "duration": 488,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa3r427flmvsi553b7wkrr1og_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478083,
+        "page": 14,
+        "from": "vupload",
+        "part": "1-Neo4j图数据库介绍",
+        "duration": 514,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521saovs7y6zmo5qj2w87u4jdtnn_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478111,
+        "page": 15,
+        "from": "vupload",
+        "part": "2-Neo4j数据库安装流程演示",
+        "duration": 430,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa19ylqe5nrazyo3mjgylm8ou_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478015,
+        "page": 16,
+        "from": "vupload",
+        "part": "3-可视化例子演示",
+        "duration": 549,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa357nqpqjjvohm2z131s6jza_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478330,
+        "page": 17,
+        "from": "vupload",
+        "part": "4-创建与删除操作演示",
+        "duration": 521,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sac93aihnzc2fw260ucev36fe_firsti.jpg",
+        "ctime": 1747793765
+      },
+      {
+        "cid": 30066478206,
+        "page": 18,
+        "from": "vupload",
+        "part": "5-数据库更改查询操作演示",
+        "duration": 516,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa1j0r6ybygktgnivhe5s1f98_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478423,
+        "page": 19,
+        "from": "vupload",
+        "part": "1-使用Py2neo建立连接",
+        "duration": 356,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa129prmtjff3mn3ochnl9yhr_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478450,
+        "page": 20,
+        "from": "vupload",
+        "part": "2-提取所需的指标信息",
+        "duration": 478,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521savxz5gj3un71u1qg4uux9jl4_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478292,
+        "page": 21,
+        "from": "vupload",
+        "part": "3-在图中创建实体",
+        "duration": 457,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa3nsx89c4dyauxgg9uowpwno_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478312,
+        "page": 22,
+        "from": "vupload",
+        "part": "4-根据给定实体创建关系",
+        "duration": 516,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa1mc26zflauxav3g45qatpgm_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478401,
+        "page": 23,
+        "from": "vupload",
+        "part": "1-项目概述与整体架构分析",
+        "duration": 452,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa1556vb84vdxfxoggb01b1l6_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478634,
+        "page": 24,
+        "from": "vupload",
+        "part": "2-医疗数据介绍及其各字段含义",
+        "duration": 446,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa4zxmrrw1mhmbe25rfd41abv_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478578,
+        "page": 25,
+        "from": "vupload",
+        "part": "3-任务流程概述",
+        "duration": 348,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa12bfferccpit73cbibtto1o_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478594,
+        "page": 26,
+        "from": "vupload",
+        "part": "4-环境配置与所需工具包安装",
+        "duration": 396,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa3czz4gfehujok11z4anpxvf_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478612,
+        "page": 27,
+        "from": "vupload",
+        "part": "5-提取数据中的关键字段信息",
+        "duration": 696,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa16aig35c5eijp1nfp236opo_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478765,
+        "page": 28,
+        "from": "vupload",
+        "part": "6-创建关系边",
+        "duration": 498,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa3op7r4mmbaxqi2jfzeelcaz_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478843,
+        "page": 29,
+        "from": "vupload",
+        "part": "7-打造医疗知识图谱模型",
+        "duration": 655,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa1nxba8xdzi0au2p88epktx5_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478867,
+        "page": 30,
+        "from": "vupload",
+        "part": "8-加载所有实体数据",
+        "duration": 413,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa2t7c6j1zwz2we3vyfqzavr7_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478888,
+        "page": 31,
+        "from": "vupload",
+        "part": "9-实体关键词字典制作",
+        "duration": 517,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa39jayppbw0vzi345wig9njy_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066478903,
+        "page": 32,
+        "from": "vupload",
+        "part": "10-完成对话系统构建",
+        "duration": 543,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa1nxoarx6560q83q89p7roms_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066479029,
+        "page": 33,
+        "from": "vupload",
+        "part": "1-关系抽取要完成的任务演示与分析",
+        "duration": 308,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa16e4w79xgv7o12unjyw93vl_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066479053,
+        "page": 34,
+        "from": "vupload",
+        "part": "3-pyltp安装与流程演示",
+        "duration": 437,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa2typcsyfjdsug1nsuyr5y3k_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540715,
+        "page": 35,
+        "from": "vupload",
+        "part": "4-得到分词与词性标注结果",
+        "duration": 402,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa2iy1o2y1rj13u1vizgrrz9y_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540743,
+        "page": 36,
+        "from": "vupload",
+        "part": "5-依存句法概述",
+        "duration": 347,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa3l6kokbnw0ozn3ttm3zd7q7_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540649,
+        "page": 37,
+        "from": "vupload",
+        "part": "6-句法分析结果整理",
+        "duration": 553,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521safpcpwsejepp613l1kc1ev5w_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540867,
+        "page": 38,
+        "from": "vupload",
+        "part": "7-语义角色构建与分析",
+        "duration": 661,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa2z9ijwa18oojz24n4k604fj_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540964,
+        "page": 39,
+        "from": "vupload",
+        "part": "8-设计规则完成关系抽取",
+        "duration": 564,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa2wjmfd9akchr31lz63houtq_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540925,
+        "page": 40,
+        "from": "vupload",
+        "part": "1-竞赛任务目标",
+        "duration": 337,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa3lioohwnfuqm43erhg1z7gh_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540933,
+        "page": 41,
+        "from": "vupload",
+        "part": "2-图模型信息提取",
+        "duration": 539,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa5adn6s4takjuf2m61esv6gn_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066540954,
+        "page": 42,
+        "from": "vupload",
+        "part": "3-节点权重特征提取(PageRank)",
+        "duration": 623,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa1ofxwbi5n5dgb3f8841psn3_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541036,
+        "page": 43,
+        "from": "vupload",
+        "part": "4-deepwalk构建图顶点特征",
+        "duration": 634,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa3dql0pcw9hf74hhjrvzcb0g_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541220,
+        "page": 44,
+        "from": "vupload",
+        "part": "5-各项统计特征",
+        "duration": 404,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa1dvbqjrx7umzy26sv0u7d4q_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541245,
+        "page": 45,
+        "from": "vupload",
+        "part": "6-app安装特征",
+        "duration": 389,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa2f8oslvvigfgu2ir41jxi8w_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541290,
+        "page": 46,
+        "from": "vupload",
+        "part": "7-图中联系人特征",
+        "duration": 415,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1916,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa3sg3qn6783kwn1s5yxx06lv_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541316,
+        "page": 47,
+        "from": "vupload",
+        "part": "1-数据与任务介绍",
+        "duration": 424,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sa1g1m7mh7luo7j2zzuubb3kx_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541503,
+        "page": 48,
+        "from": "vupload",
+        "part": "2-整体模型架构",
+        "duration": 289,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa2rslhjnihfdh11mkvf8uqv2_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541452,
+        "page": 49,
+        "from": "vupload",
+        "part": "3-数据-标签-语料库处理",
+        "duration": 616,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i1.hdslb.com/bfs/storyff/n250521sat30jgfj6b2n1299ip36btv1_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541538,
+        "page": 50,
+        "from": "vupload",
+        "part": "4-输入样本填充补齐",
+        "duration": 565,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sayv515kq3e96g1eyut787iym_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541555,
+        "page": 51,
+        "from": "vupload",
+        "part": "5-训练网络模型",
+        "duration": 601,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i2.hdslb.com/bfs/storyff/n250521sa3e06orokrhnb228i8a7ftfo_firsti.jpg",
+        "ctime": 1747792253
+      },
+      {
+        "cid": 30066541607,
+        "page": 52,
+        "from": "vupload",
+        "part": "6-医疗数据集（糖尿病）实体识别",
+        "duration": 598,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+          "width": 1920,
+          "height": 1080,
+          "rotate": 0
+        },
+        "first_frame": "http://i0.hdslb.com/bfs/storyff/n250521sa1fx2twvmik32y12k3dwcqel_firsti.jpg",
+        "ctime": 1747792253
+      }
+    ],
+    "subtitle": {
+      "allow_submit": false,
+      "list": []
+    },
+    "is_season_display": false,
+    "user_garb": {
+      "url_image_ani_cut": ""
+    },
+    "honor_reply": {},
+    "like_icon": "",
+    "need_jump_bv": false,
+    "disable_show_up_info": false,
+    "is_story_play": 0,
+    "is_view_self": false,
+    "embedPlayer": {
+      "p": 1,
+      "aid": 114543254572895,
+      "bvid": "BV1L7Jvz4ENz",
+      "cid": 30066476761,
+      "vid": "",
+      "vtype": "vupload",
+      "stats": {
+        "spmId": "333.788.0.0",
+        "spmIdFrom": "333.788.0.0",
+        "trackId": ""
+      },
+      "t": 0,
+      "fromDid": null,
+      "featureList": {}
+    }
+  }
+}

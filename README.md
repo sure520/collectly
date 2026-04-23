@@ -1,0 +1,220 @@
+# Collectly - Your AI Knowledge Butler
+
+[English](README.md) | [中文](READMEzh.md)
+
+> **"Collect"** is just the beginning, **"Manage"** is the essence.
+
+Collectly is not just a content collector—it's your **intelligent knowledge butler** that transforms scattered information into systematic wisdom. With AI-powered management, your knowledge assets are organized, activated, and always at your fingertips.
+
+## What Makes Collectly Different?
+
+### The "Management" Philosophy
+
+Unlike traditional bookmarking tools that only **store**, Collectly **manages** your knowledge through:
+
+- **Lifecycle Management** - Content flows through stages: Unread → Reading → Key Points → Review Scheduled
+- **Intelligent Categorization** - AI automatically tags, summarizes, and extracts knowledge points
+- **Active Recall System** - Smart reminders for content that needs review
+- **Learning Analytics** - Track your knowledge acquisition journey with detailed insights
+
+## Core Capabilities
+
+### 1. Universal Content Capture
+Seamlessly ingest content from major Chinese platforms:
+- **Douyin (TikTok)** - Video-to-text extraction with speech recognition
+- **Xiaohongshu** - Lifestyle and product insights
+- **WeChat Articles** - Professional blogs and industry analysis
+- **Bilibili** - Educational videos with subtitle extraction
+- **Zhihu** - Expert Q&A and in-depth articles
+- **CSDN** - Technical tutorials and code solutions
+
+### 2. AI-Powered Content Refinement
+Every piece of content is automatically processed:
+- **Smart Summarization** - Condensed 200-word summaries capturing essence
+- **Auto-Tagging** - 5-10 relevant tags across multiple dimensions (tech domain, application, concept)
+- **Knowledge Point Extraction** - Key concepts and takeaways identified
+- **Content Deduplication** - Intelligent hash-based duplicate detection
+
+### 3. Intelligent Knowledge Management
+
+#### Learning Status Pipeline
+```
+[Unread] → [Reading] → [Key Points] → [Review Scheduled]
+   ↑                                            ↓
+   └──────────── [Archive] ←────────────────────┘
+```
+
+#### Multi-Dimensional Organization
+- **By Domain**: AI, LLM, Agent, RAG, Multi-modal
+- **By Source**: Platform-based categorization
+- **By Status**: Learning progress tracking
+- **By Tags**: Custom organizational structure
+- **By Date**: Temporal content management
+
+### 4. Smart Retrieval System
+Find exactly what you need:
+- **Full-Text Search** - Across titles, content, and summaries
+- **Multi-Filter Search** - Combine domain + source + status + date range
+- **Relevance Scoring** - AI-ranked search results
+- **Semantic Understanding** - Context-aware content discovery
+
+### 5. Personal Knowledge Base
+- **Custom Notes** - Add insights to any content
+- **Tag Management** - Create your own taxonomy
+- **Learning Statistics** - Visual progress tracking
+- **Content Collections** - Group related materials
+
+## Architecture Highlights
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    CONTENT LIFECYCLE                         │
+├─────────────────────────────────────────────────────────────┤
+│  CAPTURE → PARSE → REFINE → STORE → MANAGE → RETRIEVE      │
+│     ↓        ↓        ↓        ↓        ↓          ↓       │
+│  [URL]   [Platform]  [LLM]   [SQLite] [Status]   [Search]  │
+│          [API]       [AI]    [Dedup]  [Tags]     [Filter]  │
+│                      [Tags]          [Notes]               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Project Structure
+
+```
+collectly/
+├── backend/                    # Core API Service
+│   ├── app/
+│   │   ├── api/routes.py       # RESTful endpoints
+│   │   ├── models/schemas.py   # Data models
+│   │   ├── services/
+│   │   │   ├── platform_parser.py     # Multi-platform parser
+│   │   │   ├── content_manager.py     # Storage & deduplication
+│   │   │   ├── search_engine.py       # Intelligent search
+│   │   │   ├── learning_manager.py    # Status & progress tracking
+│   │   │   └── llm_service.py         # DashScope AI integration
+│   │   └── utils/
+│   ├── tests/
+│   └── requirements.txt
+│
+├── python-parser/              # Standalone parsing service
+│   ├── main.py
+│   ├── content_extractor.py
+│   ├── summarizer.py
+│   └── requirements.txt
+│
+└── tests/                      # Platform-specific tests
+```
+
+## Quick Start
+
+### Prerequisites
+- Python 3.8+
+- TikHub API Key (platform access)
+- DashScope API Key (AI capabilities)
+
+### Installation
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd collectly
+
+# Setup backend
+cd backend
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Start server
+python -m app.main
+```
+
+API available at `http://localhost:8000`
+
+## API Reference
+
+### Content Management
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/parse-link` | POST | Parse single URL |
+| `/api/parse-links` | POST | Batch parse URLs |
+| `/api/save-content` | POST | Save to knowledge base |
+| `/api/content/{id}` | GET | Retrieve content |
+
+### Knowledge Management
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/update-learning-status` | PUT | Update content status |
+| `/api/update-tags` | PUT | Modify tags |
+| `/api/update-note` | PUT | Add personal notes |
+| `/api/learning-stats` | GET | View progress analytics |
+
+### Search
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/search` | POST | Multi-filter search |
+
+## Configuration
+
+```env
+# TikHub API
+TIKHUB_API_KEY=your_key
+TIKHUB_API_URL=https://api.tikhub.io
+
+# DashScope (Aliyun) LLM
+DASHSCOPE_API_KEY=your_key
+
+# App Settings
+APP_NAME="Collectly - AI Knowledge Butler"
+DEBUG=false
+```
+
+## The "Manage" Difference
+
+| Feature | Traditional Bookmark | Collectly |
+|---------|---------------------|-----------|
+| Storage | Save URL | Full content extraction |
+| Organization | Manual folders | AI auto-categorization |
+| Discovery | Manual browsing | Smart search + filters |
+| Retention | Static | Learning status tracking |
+| Insights | None | Learning analytics |
+| Review | Manual | Scheduled recall system |
+
+## Development
+
+```bash
+# Run tests
+cd backend
+pytest tests/
+
+# Test specific platform
+python tests/test_douyin.py
+python tests/test_zhihu.py
+```
+
+## Tech Stack
+
+- **Framework**: FastAPI
+- **Database**: SQLite with custom schema
+- **AI/LLM**: DashScope (Qwen-plus)
+- **Parsing**: TikHub API + BeautifulSoup
+- **Speech-to-Text**: Qwen3-ASR
+- **Models**: Pydantic
+
+## License
+
+MIT License
+
+## Acknowledgments
+
+- [TikHub](https://api.tikhub.io) - Multi-platform content access
+- [DashScope](https://dashscope.aliyun.com) - LLM capabilities
+- [FastAPI](https://fastapi.tiangolo.com) - Web framework
+
+---
+
+> **Collectly** - Transform information overload into organized wisdom.
