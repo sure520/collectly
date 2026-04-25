@@ -2,18 +2,19 @@ import sqlite3
 import hashlib
 import json
 from app.models.schemas import ContentResponse
+from app.services.vector_service import VectorService
 from typing import Optional
 
 class ContentManager:
     def __init__(self):
         self.db_path = "knowledge.db"
         self._init_db()
+        self.vector_service = VectorService()
     
     def _init_db(self):
         """初始化数据库"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            # 创建内容表
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS content (
                     id TEXT PRIMARY KEY,
@@ -30,7 +31,6 @@ class ContentManager:
                     hash TEXT UNIQUE
                 )
             ''')
-            # 创建学习状态表
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS learning_status (
                     content_id TEXT PRIMARY KEY,
@@ -41,20 +41,32 @@ class ContentManager:
             ''')
             conn.commit()
     
+    def _build_embedding_text(self, content: ContentResponse) -> str:
+        """构建用于向量化的完整文本"""
+        parts = []
+        if content.title:
+            parts.append(f"标题: {content.title}")
+        if content.summary:
+            parts.append(f"摘要: {content.summary}")
+        if content.content:
+            content_text = content.content[:3000]
+            parts.append(f"内容: {content_text}")
+        if content.knowledge_points:
+            parts.append(f"知识点: {', '.join(content.knowledge_points)}")
+        if content.tags:
+            parts.append(f"标签: {', '.join(content.tags)}")
+        return "\n".join(parts)
+    
     async def save(self, content: ContentResponse) -> str:
         """保存内容，实现去重"""
-        # 生成内容哈希值
         content_hash = self._generate_hash(content)
         
-        # 检查是否已存在
         existing_id = await self._check_duplicate(content_hash, content.url)
         if existing_id:
             return existing_id
         
-        # 生成唯一ID
         content_id = hashlib.md5((content.url + str(content.create_time)).encode()).hexdigest()
         
-        # 保存到数据库
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             try:
@@ -77,15 +89,27 @@ class ContentManager:
                     content.summary,
                     content_hash
                 ))
-                # 初始化学习状态
                 cursor.execute('''
                     INSERT INTO learning_status (content_id, status, note)
                     VALUES (?, ?, ?)
                 ''', (content_id, '未读', ''))
                 conn.commit()
+                
+                embedding_text = self._build_embedding_text(content)
+                metadata = {
+                    "source": content.source,
+                    "title": content.title,
+                    "tags": json.dumps(content.tags),
+                    "knowledge_points": json.dumps(content.knowledge_points)
+                }
+                self.vector_service.add_embedding(
+                    content_id=content_id,
+                    text=embedding_text,
+                    metadata=metadata
+                )
+                
                 return content_id
             except sqlite3.IntegrityError:
-                # 处理唯一约束冲突
                 return await self._get_existing_id(content.url)
     
     async def get(self, content_id: str) -> ContentResponse:
@@ -119,12 +143,10 @@ class ContentManager:
         """检查是否存在重复内容"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            # 检查哈希值
             cursor.execute('SELECT id FROM content WHERE hash = ?', (content_hash,))
             row = cursor.fetchone()
             if row:
                 return row[0]
-            # 检查URL
             cursor.execute('SELECT id FROM content WHERE url = ?', (url,))
             row = cursor.fetchone()
             if row:
@@ -169,15 +191,31 @@ class ContentManager:
                 content_id
             ))
             conn.commit()
-            return cursor.rowcount > 0
+            success = cursor.rowcount > 0
+            
+            if success:
+                embedding_text = self._build_embedding_text(content)
+                metadata = {
+                    "source": content.source,
+                    "title": content.title,
+                    "tags": json.dumps(content.tags),
+                    "knowledge_points": json.dumps(content.knowledge_points)
+                }
+                self.vector_service.add_embedding(
+                    content_id=content_id,
+                    text=embedding_text,
+                    metadata=metadata
+                )
+            
+            return success
     
     async def delete(self, content_id: str) -> bool:
         """删除内容"""
+        self.vector_service.delete_embedding(content_id)
+        
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            # 删除学习状态
             cursor.execute('DELETE FROM learning_status WHERE content_id = ?', (content_id,))
-            # 删除内容
             cursor.execute('DELETE FROM content WHERE id = ?', (content_id,))
             conn.commit()
             return cursor.rowcount > 0
@@ -208,3 +246,9 @@ class ContentManager:
                     "summary": row[10]
                 })
             return results
+    
+    async def get_vector_stats(self) -> dict:
+        """获取向量库统计信息"""
+        return {
+            "collection_size": self.vector_service.get_collection_size()
+        }

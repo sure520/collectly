@@ -118,3 +118,7 @@ vendor/
 .stats
 .config
 .accesslog
+
+tests/test_url.txt
+backend/chroma_data/
+*.bin

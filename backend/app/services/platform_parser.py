@@ -1,5 +1,8 @@
 import asyncio
 import aiohttp
+import re
+import requests
+from urllib.parse import urlparse, parse_qs
 from datetime import datetime, timedelta, timezone
 import os
 from urllib.parse import quote
@@ -12,6 +15,119 @@ from app.services.llm_service import llm_service, LLMServiceError
 settings = get_settings()
 logger = get_logger("platform_parser")
 
+# 1. 从文本中提取 http 链接（处理带文案的分享内容）
+def extract_url(text: str) -> str:
+    text = str(text).strip()
+    # 精准匹配：抖音/小红书/B站/知乎 合法链接，遇到中文、符号自动截断
+    pattern = re.compile(
+        r"https?://(?:www\.|v\.|b23\.tv|xhslink\.com|zhuanlan\.zhihu\.com)"
+        r"[a-zA-Z0-9_\-\/.?&=]+",
+        re.I
+    )
+    match = pattern.search(text)
+    return match.group(0) if match else text
+
+# 2. 小红书短链还原：追踪重定向，得到真实长链接
+def resolve_xhs_short(url: str) -> str:
+    if "xhslink.com" not in url:
+        return url
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+        "Referer": "https://www.xiaohongshu.com/",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "sec-ch-ua": '"Chromium";v="130", "Not=A?Brand";v="99", "Google Chrome";v="130"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "same-origin",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1"
+    }
+
+    try:
+        # 必须用 GET，不能只用 HEAD
+        with requests.Session() as s:
+            resp = s.get(url, headers=headers, allow_redirects=True, timeout=10)
+            return resp.url
+    except Exception as e:
+        print(f"[xhs还原失败] {e}")
+        return url
+
+# 2. 短链还原：追踪重定向，得到真实长链接
+def resolve_short_url(url: str) -> str:
+    if "xhslink.com" in url:
+        return resolve_xhs_short(url)
+
+    short_domains = ["b23.tv", "v.douyin.com"]
+    if not any(d in url for d in short_domains):
+        return url
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0.0.0 Safari/537.36"
+    }
+    try:
+        with requests.Session() as s:
+            resp = s.head(url, headers=headers, allow_redirects=True, timeout=10)
+            return resp.url
+    except Exception:
+        return url
+
+# 3. 核心：清理成永久纯净链接（你所有平台都支持）
+def clean_pure_url(url: str) -> str:
+    parsed = urlparse(url)
+    netloc = parsed.netloc
+    path = parsed.path.rstrip("/")
+    query = parse_qs(parsed.query)
+
+    # --- 抖音：特殊处理 modal_id → 标准视频链接 ---
+    if "douyin.com" in netloc:
+        modal_id = query.get("modal_id", [None])[0]
+        if modal_id:
+            return f"https://www.douyin.com/video/{modal_id}"
+        return f"https://{netloc}{path}"
+
+    # --- B站：保留 p= 分P，删除所有追踪参数 ---
+    elif "bilibili.com" in netloc:
+        p = query.get("p", [None])[0]
+        base = f"https://www.bilibili.com{path}"
+        return f"{base}?p={p}" if p else base
+
+    # --- 知乎专栏 ---
+    elif "zhuanlan.zhihu.com" in netloc:
+        return f"https://zhuanlan.zhihu.com{path}"
+
+    # --- 小红书：必须保留 xsec_token 和 xsec_source，否则无法访问 ---
+    elif "xiaohongshu.com" in netloc:
+        xsec_token = query.get("xsec_token", [None])[0]
+        xsec_source = query.get("xsec_source", [None])[0]
+        
+        params = []
+        if xsec_token:
+            params.append(f"xsec_token={xsec_token}")
+        if xsec_source:
+            params.append(f"xsec_source={xsec_source}")
+        
+        base = f"https://www.xiaohongshu.com{path}"
+        return f"{base}?{'&'.join(params)}" if params else base
+
+    # --- 其他 ---
+    else:
+        return f"{parsed.scheme}://{netloc}{path}"
+
+# 4. 总调度函数：一键处理所有链接
+def process_url(raw_text: str) -> str:
+    # 微信公众号链接直接返回
+    if "mp.weixin.qq.com" in raw_text:
+        return raw_text
+    url = extract_url(raw_text)
+    url = resolve_short_url(url)
+    url = clean_pure_url(url)
+    return url
+
+
 class PlatformParser:
     def __init__(self):
         self.api_key = settings.TIKHUB_API_KEY
@@ -23,6 +139,7 @@ class PlatformParser:
     async def parse(self, url: str) -> ContentResponse:
         """解析平台链接，提取内容"""
         logger.info(f"开始解析链接: {url}")
+        url = process_url(url)
         platform = self._detect_platform(url)
         if not platform:
             logger.warning(f"不支持的平台链接: {url}")
@@ -121,7 +238,7 @@ class PlatformParser:
     async def _parse_xiaohongshu(self, url: str) -> ContentResponse:
         """解析小红书链接"""
         endpoint = "/api/v1/xiaohongshu/app/get_note_info"
-        params = f"note_id={url.split('?')[0].split('/')[-1]}"
+        params = f"note_id={url.split('?')[0].strip('/').split('/')[-1]}"
         
         logger.debug(f"调用小红书 API: {endpoint}")
         
@@ -477,3 +594,4 @@ class PlatformParser:
             if point in content:
                 knowledge_points.append(point)
         return list(set(knowledge_points))
+

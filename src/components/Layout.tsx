@@ -8,15 +8,11 @@ import {
   Settings,
   Menu,
   X,
-  User,
-  LogOut,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LayoutProps {
   children: React.ReactNode;
-  user: { email: string; nickname?: string } | null;
-  onLogout?: () => void;
 }
 
 const navItems = [
@@ -27,7 +23,7 @@ const navItems = [
   { path: '/settings', icon: Settings, label: '设置' },
 ];
 
-export function Layout({ children, user, onLogout }: LayoutProps) {
+export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -70,14 +66,14 @@ export function Layout({ children, user, onLogout }: LayoutProps) {
 
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
-              <User size={16} className="text-gray-600 dark:text-gray-400" />
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+              我
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                {user?.nickname || user?.email?.split('@')[0] || '用户'}
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                个人知识库
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">单用户模式</p>
             </div>
           </div>
         </div>
@@ -142,12 +138,12 @@ export function Layout({ children, user, onLogout }: LayoutProps) {
               </nav>
               <div className="p-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
-                    <User size={16} />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                    我
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {user?.nickname || user?.email?.split('@')[0] || '用户'}
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      个人知识库
                     </p>
                   </div>
                 </div>

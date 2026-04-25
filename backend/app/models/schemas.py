@@ -29,6 +29,7 @@ class SearchQuery(BaseModel):
     start_date: Optional[date] = Field(default=None, description="开始日期")
     end_date: Optional[date] = Field(default=None, description="结束日期")
     learning_status: Optional[str] = Field(default=None, description="学习状态筛选")
+    use_semantic: Optional[bool] = Field(default=True, description="是否使用语义检索")
 
 # 搜索结果模型
 class SearchResult(BaseModel):

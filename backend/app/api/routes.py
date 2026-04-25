@@ -74,7 +74,8 @@ async def search(query: SearchQuery):
             content_type=query.content_type,
             start_date=query.start_date,
             end_date=query.end_date,
-            learning_status=query.learning_status
+            learning_status=query.learning_status,
+            use_semantic=query.use_semantic
         )
         return results
     except Exception as e:
@@ -129,3 +130,81 @@ async def get_learning_stats():
         return stats
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+# 获取向量库统计端点
+@router.get("/vector-stats", response_model=dict)
+async def get_vector_stats():
+    """获取向量库统计信息"""
+    try:
+        stats = await content_manager.get_vector_stats()
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+# 重新嵌入内容向量端点
+@router.post("/re-embed/{content_id}", response_model=dict)
+async def re_embed_content(content_id: str):
+    """重新生成指定内容的向量"""
+    try:
+        content = await content_manager.get(content_id)
+        embedding_text = content_manager._build_embedding_text(content)
+        metadata = {
+            "source": content.source,
+            "title": content.title,
+            "tags": str(content.tags),
+            "knowledge_points": str(content.knowledge_points)
+        }
+        success = content_manager.vector_service.add_embedding(
+            content_id=content_id,
+            text=embedding_text,
+            metadata=metadata
+        )
+        if success:
+            return {"message": "向量更新成功"}
+        else:
+            raise HTTPException(status_code=500, detail="向量更新失败")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+# 全量重建向量索引端点
+@router.post("/rebuild-vectors", response_model=dict)
+async def rebuild_all_vectors():
+    """全量重建向量索引"""
+    try:
+        content_manager.vector_service.reset_collection()
+        
+        all_content = await content_manager.get_all()
+        success_count = 0
+        for content in all_content:
+            from app.models.schemas import ContentResponse
+            content_obj = ContentResponse(
+                title=content["title"],
+                content=content["content"],
+                author=content["author"],
+                update=content["update"],
+                create_time=content["create_time"],
+                url=content["url"],
+                source=content["source"],
+                tags=content["tags"],
+                knowledge_points=content["knowledge_points"],
+                summary=content["summary"]
+            )
+            embedding_text = content_manager._build_embedding_text(content_obj)
+            metadata = {
+                "source": content["source"],
+                "title": content["title"],
+                "tags": str(content["tags"]),
+                "knowledge_points": str(content["knowledge_points"])
+            }
+            if content_manager.vector_service.add_embedding(
+                content_id=content["id"],
+                text=embedding_text,
+                metadata=metadata
+            ):
+                success_count += 1
+        
+        return {"message": f"向量索引重建完成", "success_count": success_count, "total": len(all_content)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -1,0 +1,27 @@
+{
+  "test_time": "2026-04-25T14:20:48.005932",
+  "tests": [
+    {
+      "name": "向量服务",
+      "success": true,
+      "vector_count": 1
+    },
+    {
+      "name": "内容管理",
+      "success": true,
+      "content_count": 1
+    },
+    {
+      "name": "搜索引擎",
+      "success": true,
+      "keyword_count": 1,
+      "semantic_count": 1
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "pass_rate": 100.0
+  }
+}

@@ -109,10 +109,74 @@ collectly/
 
 ### Prerequisites
 - Python 3.8+
+- Node.js 16+ (frontend build)
 - TikHub API Key (platform access)
 - DashScope API Key (AI capabilities)
 
-### Installation
+### Option 1: One-Click Deployment Script (Recommended)
+
+#### Windows Users
+```powershell
+# Clone repository
+git clone <repository-url>
+cd collectly
+
+# Mode A: Local deployment + Tunnel (for personal computer)
+.\deploy.ps1 -Mode A
+
+# Mode B: Cloud server public deployment (24/7 online)
+.\deploy.ps1 -Mode B
+```
+
+#### Linux/macOS Users
+```bash
+# Clone repository
+git clone <repository-url>
+cd collectly
+
+# Mode A: Local deployment + Tunnel
+./deploy.sh --mode A
+
+# Mode B: Cloud server public deployment
+./deploy.sh --mode B
+```
+
+**The deployment script automatically:**
+- ✅ Environment check (Python, Node.js)
+- ✅ Virtual environment creation
+- ✅ Dependency installation (frontend & backend)
+- ✅ Environment variable configuration
+- ✅ Backend service startup
+- ✅ Frontend static resource build
+- ✅ Tunnel configuration (Mode A) / Nginx setup guide (Mode B)
+
+### Option 2: Docker Deployment
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd collectly
+
+# Configure environment variables
+cp backend/.env.example backend/.env
+# Edit backend/.env with your API keys
+
+# Start with one command
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+Access URLs:
+- Frontend: http://localhost:3266
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+
+### Option 3: Manual Installation (Development Mode)
 
 ```bash
 # Clone repository
@@ -122,18 +186,31 @@ cd collectly
 # Setup backend
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+.venv\Scripts\activate  # Windows
+source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 
 # Configure environment
 cp .env.example .env
 # Edit .env with your API keys
 
-# Start server
-python -m app.main
+# Start backend (Terminal 1)
+.\start.bat  # Windows
+# or
+./start.sh  # Linux/macOS
+# or
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Build and start frontend (Terminal 2)
+cd ..
+npm install
+npm run dev
 ```
 
-API available at `http://localhost:8000`
+Access URLs:
+- Frontend: http://localhost:3266
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
 
 ## API Reference
 

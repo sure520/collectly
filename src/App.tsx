@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
-import { Auth } from './components/Auth';
 import { Dashboard } from './components/Dashboard';
 import { LinkInput } from './components/LinkInput';
 import { KnowledgeList } from './components/KnowledgeList';
@@ -11,15 +10,12 @@ import FilterPanel from './components/FilterPanel';
 import { DetailModal } from './components/DetailModal';
 import { Stats } from './components/Stats';
 import { Settings } from './components/Settings';
-import { useAuth } from './hooks/useAuth';
 import { useKnowledge } from './hooks/useKnowledge';
 import type { KnowledgeItem, SearchFilters, LearningStatus } from './types';
-import { getDomainName, getContentTypeName, getDifficultyName } from './utils/format';
 
 function AppContent() {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
-  const { items, stats, loading, parseAndAddItem, semanticSearch, updateItem, deleteItem, fetchItems } = useKnowledge(user?.id);
+  const { items, stats, loading, parseAndAddItem, semanticSearch, updateItem, deleteItem, fetchItems } = useKnowledge();
   const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
@@ -30,25 +26,19 @@ function AppContent() {
   const [isSemanticSearch, setIsSemanticSearch] = useState(false);
 
   const handleParseLinks = async (urls: string[]) => {
-    console.log('[DEBUG] handleParseLinks 被调用，urls:', urls);
     setIsParsing(true);
     setParseProgress(0);
 
     for (let i = 0; i < urls.length; i++) {
       const platform = detectPlatform(urls[i]);
-      console.log('[DEBUG] 检测平台:', urls[i], '->', platform);
       if (platform) {
-        const result = await parseAndAddItem(urls[i], platform);
-        console.log('[DEBUG] parseAndAddItem 返回:', result);
-      } else {
-        console.log('[DEBUG] 未检测到平台，跳过:', urls[i]);
+        await parseAndAddItem(urls[i], platform);
       }
       setParseProgress(Math.round(((i + 1) / urls.length) * 100));
     }
 
     setIsParsing(false);
     setParseProgress(0);
-    console.log('[DEBUG] 解析完成');
   };
 
   const handleItemClick = (item: KnowledgeItem) => {
@@ -108,7 +98,7 @@ function AppContent() {
   const displayItems = isSemanticSearch && searchQuery ? searchResults : items;
 
   return (
-    <Layout user={{ email: user?.email || '', nickname: user?.user_metadata?.nickname }}>
+    <Layout>
       <Routes>
         <Route
           path="/"
@@ -130,9 +120,7 @@ function AppContent() {
                 onSubmit={handleParseLinks}
                 isParsing={isParsing}
                 parseProgress={parseProgress}
-                onParsingComplete={() => {
-                  console.log('[DEBUG] 解析完成，链接列表已清空');
-                }}
+                onParsingComplete={() => {}}
               />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map(item => (
@@ -205,7 +193,6 @@ function detectPlatform(url: string): string | null {
 }
 
 function App() {
-  // 简化方案：直接显示主界面，绕过认证
   return (
     <HashRouter future={{ v7_startTransition: true }}>
       <AppContent />

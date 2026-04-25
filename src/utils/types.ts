@@ -27,6 +27,7 @@ export interface SearchQuery {
   start_date?: string;
   end_date?: string;
   learning_status?: string;
+  use_semantic?: boolean;
 }
 
 // 搜索结果类型

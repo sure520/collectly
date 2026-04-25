@@ -107,10 +107,74 @@ collectly/
 
 ### 环境要求
 - Python 3.8+
+- Node.js 16+（前端构建）
 - TikHub API 密钥（平台接入）
 - DashScope API 密钥（AI 能力）
 
-### 安装步骤
+### 方式一：一键部署脚本（推荐）
+
+#### Windows 用户
+```powershell
+# 克隆仓库
+git clone <仓库地址>
+cd collectly
+
+# 方案 A：本地部署 + 内网穿透（个人电脑使用）
+.\deploy.ps1 -Mode A
+
+# 方案 B：云服务器公网部署（24 小时在线）
+.\deploy.ps1 -Mode B
+```
+
+#### Linux/macOS 用户
+```bash
+# 克隆仓库
+git clone <仓库地址>
+cd collectly
+
+# 方案 A：本地部署 + 内网穿透
+./deploy.sh --mode A
+
+# 方案 B：云服务器公网部署
+./deploy.sh --mode B
+```
+
+**部署脚本自动完成：**
+- ✅ 环境检查（Python、Node.js）
+- ✅ 虚拟环境创建
+- ✅ 依赖安装（前后端）
+- ✅ 环境变量配置
+- ✅ 后端服务启动
+- ✅ 前端静态资源构建
+- ✅ 内网穿透配置（方案 A）/ Nginx 配置指导（方案 B）
+
+### 方式二：Docker 部署
+
+```bash
+# 克隆仓库
+git clone <仓库地址>
+cd collectly
+
+# 配置环境变量
+cp backend/.env.example backend/.env
+# 编辑 backend/.env 填入 API 密钥
+
+# 一键启动
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+访问地址：
+- 前端：http://localhost:3266
+- 后端 API：http://localhost:8000
+- API 文档：http://localhost:8000/docs
+
+### 方式三：手动安装（开发模式）
 
 ```bash
 # 克隆仓库
@@ -120,18 +184,31 @@ cd collectly
 # 设置后端
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+.venv\Scripts\activate  # Windows
+source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 
 # 配置环境
 cp .env.example .env
 # 编辑 .env 填入你的 API 密钥
 
-# 启动服务
-python -m app.main
+# 启动后端（终端 1）
+.\start.bat  # Windows
+# 或
+./start.sh  # Linux/macOS
+# 或
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# 构建并启动前端（终端 2）
+cd ..
+npm install
+npm run dev
 ```
 
-API 服务地址 `http://localhost:8000`
+访问地址：
+- 前端：http://localhost:3266
+- 后端 API：http://localhost:8000
+- API 文档：http://localhost:8000/docs
 
 ## API 接口
 
