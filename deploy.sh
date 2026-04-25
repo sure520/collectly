@@ -110,13 +110,13 @@ echo ""
 # ============================================
 echo -e "${YELLOW}[2/6] 配置环境变量...${NC}"
 
-ENV_FILE="$BACKEND_DIR/.env"
+ENV_FILE="$PROJECT_ROOT/.env"
 if [ ! -f "$ENV_FILE" ]; then
-    ENV_EXAMPLE="$BACKEND_DIR/.env.example"
+    ENV_EXAMPLE="$PROJECT_ROOT/.env.example"
     if [ -f "$ENV_EXAMPLE" ]; then
         cp "$ENV_EXAMPLE" "$ENV_FILE"
         echo -e "${YELLOW}  ! 已从 .env.example 创建 .env 文件${NC}"
-        echo -e "${YELLOW}  ! 请编辑 backend/.env 填写 API Key 后重新运行${NC}"
+        echo -e "${YELLOW}  ! 请编辑 .env 填写 API Key 后重新运行${NC}"
         echo -e "${YELLOW}  ! 编辑命令：nano $ENV_FILE${NC}"
         exit 0
     else
@@ -135,7 +135,7 @@ echo ""
 if [ "$SKIP_BACKEND" = false ]; then
     echo -e "${YELLOW}[3/6] 安装后端依赖...${NC}"
 
-    cd "$BACKEND_DIR"
+    cd "$PROJECT_ROOT"
 
     # 检查虚拟环境
     if [ ! -d ".venv" ]; then
@@ -198,31 +198,30 @@ echo ""
 # ============================================
 echo -e "${YELLOW}[5/6] 启动后端服务...${NC}"
 
-# 读取端口配置
-BACKEND_PORT=8000
+BACKEND_PORT="8000"
 if grep -q "^BACKEND_PORT=" "$ENV_FILE" 2>/dev/null; then
     BACKEND_PORT=$(grep "^BACKEND_PORT=" "$ENV_FILE" | cut -d'=' -f2)
 fi
 
-LOG_DIR="$BACKEND_DIR/logs"
-mkdir -p "$LOG_DIR"
+UVICORN_PATH="$PROJECT_ROOT/.venv/bin/uvicorn"
+LOG_DIR="$PROJECT_ROOT/logs"
+if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR"
+fi
 
 echo "  - 后端服务端口：$BACKEND_PORT"
 echo "  - 日志目录：$LOG_DIR"
 
 # 启动后端（后台运行）
-cd "$BACKEND_DIR"
-source .venv/bin/activate
-nohup uvicorn app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" --log-level info > "$LOG_DIR/app.log" 2>&1 &
-BACKEND_PID=$!
-deactivate
 cd "$PROJECT_ROOT"
+nohup "$UVICORN_PATH" backend.app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" --log-level info > "$LOG_DIR/backend.log" 2>&1 &
+BACKEND_PID=$!
 
 echo -e "${GREEN}  ✓ 后端服务已启动（PID: $BACKEND_PID）${NC}"
 echo ""
 
 # ============================================
-# 步骤 6：配置内网穿透（方案A）或 Nginx（方案B）
+# 步骤 6：配置内网穿透（方案A）或完成部署（方案B）
 # ============================================
 if [ "$MODE" = "A" ]; then
     echo -e "${YELLOW}[6/6] 配置内网穿透（方案A）...${NC}"
@@ -238,71 +237,16 @@ if [ "$MODE" = "A" ]; then
         echo "    ngrok http $BACKEND_PORT"
     else
         echo -e "${YELLOW}  ! 未检测到 cloudflared${NC}"
-        echo "    是否安装 Cloudflare Tunnel？(y/n): "
-        read -r INSTALL_TUNNEL
-        if [ "$INSTALL_TUNNEL" = "y" ]; then
-            echo "  - 下载 cloudflared..."
-            if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-                curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared
-                chmod +x /usr/local/bin/cloudflared
-                echo -e "${GREEN}  ✓ cloudflared 安装完成${NC}"
-            elif [[ "$OSTYPE" == "darwin"* ]]; then
-                brew install cloudflared
-                echo -e "${GREEN}  ✓ cloudflared 安装完成${NC}"
-            else
-                echo -e "${RED}  ✗ 请手动安装：https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/${NC}"
-            fi
-        else
-            echo -e "${YELLOW}  ! 跳过内网穿透配置${NC}"
-        fi
+        echo "    如需外网访问，请手动安装 cloudflared 或 ngrok"
+        echo "    cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/"
     fi
 else
     echo -e "${YELLOW}[6/6] 方案B 部署完成${NC}"
     echo ""
     echo -e "${GREEN}  ✓ 后端服务已在端口 $BACKEND_PORT 启动${NC}"
     echo ""
-    echo "  建议配置 Nginx 反向代理和 HTTPS："
-    echo "    sudo apt install nginx  # Ubuntu/Debian"
-    echo "    sudo yum install nginx  # CentOS/RHEL"
-    echo ""
-    echo "  Nginx 配置示例 (/etc/nginx/sites-available/collectly)："
-    echo "    server {"
-    echo "        listen 443 ssl;"
-    echo "        server_name your-domain.com;"
-    echo ""
-    echo "        ssl_certificate /path/to/cert.pem;"
-    echo "        ssl_certificate_key /path/to/key.pem;"
-    echo ""
-    echo "        location / {"
-    echo "            proxy_pass http://127.0.0.1:$BACKEND_PORT;"
-    echo "            proxy_set_header Host \$host;"
-    echo "            proxy_set_header X-Real-IP \$remote_addr;"
-    echo "            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"
-    echo "            proxy_set_header X-Forwarded-Proto \$scheme;"
-    echo "        }"
-    echo "    }"
-    echo ""
-    echo "  配置 systemd 服务实现开机自启："
-    echo "    sudo tee /etc/systemd/system/collectly.service > /dev/null << 'EOF'"
-    echo "    [Unit]"
-    echo "    Description=Collectly AI Knowledge Manager"
-    echo "    After=network.target"
-    echo ""
-    echo "    [Service]"
-    echo "    Type=simple"
-    echo "    User=$(whoami)"
-    echo "    WorkingDirectory=$BACKEND_DIR"
-    echo "    ExecStart=$BACKEND_DIR/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT"
-    echo "    Restart=always"
-    echo "    RestartSec=5"
-    echo ""
-    echo "    [Install]"
-    echo "    WantedBy=multi-user.target"
-    echo "    EOF"
-    echo ""
-    echo "    sudo systemctl daemon-reload"
-    echo "    sudo systemctl enable collectly"
-    echo "    sudo systemctl start collectly"
+    echo "  请确保云服务器防火墙已放行端口 $BACKEND_PORT"
+    echo "  建议使用 Nginx 反向代理并配置 HTTPS"
 fi
 
 echo ""
@@ -312,9 +256,12 @@ echo -e "${GREEN}============================================${NC}"
 echo ""
 echo "  后端 API 地址：http://localhost:$BACKEND_PORT"
 echo "  API 文档：http://localhost:$BACKEND_PORT/docs"
+echo "  前端地址：http://localhost:3266（开发模式）"
+if [ -f "$FRONTEND_DIR/dist/index.html" ]; then
+    echo "  前端静态文件：$FRONTEND_DIR/dist"
+fi
 echo ""
 echo "  管理命令："
-echo "    查看后端日志：tail -f $LOG_DIR/app.log"
 echo "    停止后端：kill $BACKEND_PID"
-echo "    重启后端：kill $BACKEND_PID && cd $BACKEND_DIR && source .venv/bin/activate && nohup uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT > $LOG_DIR/app.log 2>&1 &"
+echo "    查看日志：tail -f $LOG_DIR/backend.log"
 echo ""

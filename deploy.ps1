@@ -93,13 +93,13 @@ Write-Host ""
 # ============================================
 Write-Color Yellow "[2/6] 配置环境变量..."
 
-$envFile = Join-Path $BackendDir ".env"
+$envFile = Join-Path $ProjectRoot ".env"
 if (-not (Test-Path $envFile)) {
-    $envExample = Join-Path $BackendDir ".env.example"
+    $envExample = Join-Path $ProjectRoot ".env.example"
     if (Test-Path $envExample) {
         Copy-Item $envExample $envFile
         Write-Color Yellow "  ! 已从 .env.example 创建 .env 文件"
-        Write-Color Yellow "  ! 请编辑 backend\.env 填写 API Key 后重新运行"
+        Write-Color Yellow "  ! 请编辑 .env 填写 API Key 后重新运行"
         Write-Color Yellow "  ! 按任意键打开文件编辑，或 Ctrl+C 退出"
         pause
         notepad $envFile
@@ -120,10 +120,10 @@ Write-Host ""
 if (-not $SkipBackend) {
     Write-Color Yellow "[3/6] 安装后端依赖..."
 
-    Set-Location $BackendDir
+    Set-Location $ProjectRoot
 
     # 检查虚拟环境
-    $venvPath = Join-Path $BackendDir ".venv"
+    $venvPath = Join-Path $ProjectRoot ".venv"
     if (-not (Test-Path $venvPath)) {
         Write-Host "  - 创建 Python 虚拟环境..."
         python -m venv .venv
@@ -201,8 +201,8 @@ if ($envContent) {
     $backendPort = ($envContent -split "=")[1].Trim()
 }
 
-$uvicornPath = Join-Path $BackendDir ".venv\Scripts\uvicorn"
-$logDir = Join-Path $BackendDir "logs"
+$uvicornPath = Join-Path $ProjectRoot ".venv\Scripts\uvicorn"
+$logDir = Join-Path $ProjectRoot "logs"
 if (-not (Test-Path $logDir)) {
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
 }
@@ -212,10 +212,10 @@ Write-Host "  - 日志目录：$logDir"
 
 # 启动后端（后台运行）
 $backendJob = Start-Job -ScriptBlock {
-    param($uvicornPath, $backendDir, $backendPort)
-    Set-Location $backendDir
-    & $uvicornPath app.main:app --host 0.0.0.0 --port $backendPort --log-level info
-} -ArgumentList $uvicornPath, $BackendDir, $backendPort
+    param($uvicornPath, $projectRoot, $backendPort)
+    Set-Location $projectRoot
+    & $uvicornPath backend.app.main:app --host 0.0.0.0 --port $backendPort --log-level info
+} -ArgumentList $uvicornPath, $ProjectRoot, $backendPort
 
 Write-Color Green "  ✓ 后端服务已启动（后台运行）"
 Write-Host ""
@@ -294,7 +294,7 @@ if (Test-Path (Join-Path $FrontendDir "dist\index.html")) {
 Write-Host ""
 Write-Host "  管理命令："
 Write-Host "    停止后端：Stop-Job -Id $($backendJob.Id)"
-Write-Host "    查看日志：Get-Content .\backend\logs\app_*.log -Tail 50"
+Write-Host "    查看日志：Get-Content .\logs\app_*.log -Tail 50"
 Write-Host ""
 
 # 等待用户按任意键退出

@@ -1,6 +1,9 @@
 import logging
-import os
 from datetime import datetime
+from pathlib import Path
+
+# 项目根目录
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 class Logger:
     def __init__(self, name: str = "app"):
@@ -12,12 +15,11 @@ class Logger:
         logger.setLevel(logging.DEBUG)
         
         if not logger.handlers:
-            log_dir = "logs"
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
+            log_dir = PROJECT_ROOT / "logs"
+            log_dir.mkdir(parents=True, exist_ok=True)
             
-            log_file = os.path.join(log_dir, f"{self.name}_{datetime.now().strftime('%Y%m%d')}.log")
-            fh = logging.FileHandler(log_file, encoding='utf-8')
+            log_file = log_dir / f"{self.name}_{datetime.now().strftime('%Y%m%d')}.log"
+            fh = logging.FileHandler(str(log_file), encoding='utf-8')
             fh.setLevel(logging.DEBUG)
             
             ch = logging.StreamHandler()

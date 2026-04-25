@@ -1,10 +1,14 @@
 import sqlite3
 import json
+from pathlib import Path
 from typing import List, Optional
+
+# 项目根目录
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 class LearningManager:
     def __init__(self):
-        self.db_path = "knowledge.db"
+        self.db_path = str(PROJECT_ROOT / "knowledge.db")
     
     async def update_status(self, content_id: str, status: str) -> bool:
         """更新学习状态"""

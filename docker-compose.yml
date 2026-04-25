@@ -3,17 +3,17 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     container_name: collectly-backend
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     env_file:
-      - ./backend/.env
+      - .env
     volumes:
-      - ./backend/data:/app/data
-      - ./backend/logs:/app/logs
-      - ./backend/chroma_db:/app/chroma_db
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./chroma_db:/app/chroma_db
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

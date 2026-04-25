@@ -93,8 +93,7 @@ collectly/
 │   │   │   ├── learning_manager.py    # Status & progress tracking
 │   │   │   └── llm_service.py         # DashScope AI integration
 │   │   └── utils/
-│   ├── tests/
-│   └── requirements.txt
+│   └── tests/
 │
 ├── python-parser/              # Standalone parsing service
 │   ├── main.py
@@ -102,7 +101,17 @@ collectly/
 │   ├── summarizer.py
 │   └── requirements.txt
 │
-└── tests/                      # Platform-specific tests
+├── tests/                      # Platform-specific tests
+│
+├── start.bat                   # Windows startup script
+├── start.ps1                   # PowerShell startup script
+├── Dockerfile                  # Docker build file
+├── docker-compose.yml          # Docker Compose configuration
+├── deploy.ps1                  # One-click deployment (Windows)
+├── deploy.sh                   # One-click deployment (Linux/macOS)
+├── .env.example                # Environment variables template
+├── requirements.txt            # Python dependencies
+└── pyproject.toml              # Python project configuration
 ```
 
 ## Quick Start
@@ -158,8 +167,8 @@ git clone <repository-url>
 cd collectly
 
 # Configure environment variables
-cp backend/.env.example backend/.env
-# Edit backend/.env with your API keys
+cp .env.example .env
+# Edit .env with your API keys
 
 # Start with one command
 docker-compose up -d
@@ -184,7 +193,6 @@ git clone <repository-url>
 cd collectly
 
 # Setup backend
-cd backend
 python -m venv .venv
 .venv\Scripts\activate  # Windows
 source .venv/bin/activate  # Linux/macOS
@@ -197,9 +205,9 @@ cp .env.example .env
 # Start backend (Terminal 1)
 .\start.bat  # Windows
 # or
-./start.sh  # Linux/macOS
+.\start.ps1  # PowerShell
 # or
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Build and start frontend (Terminal 2)
 cd ..

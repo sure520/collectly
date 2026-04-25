@@ -1,13 +1,17 @@
 import sqlite3
 import hashlib
 import json
+from pathlib import Path
 from app.models.schemas import ContentResponse
 from app.services.vector_service import VectorService
 from typing import Optional
 
+# 项目根目录
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+
 class ContentManager:
     def __init__(self):
-        self.db_path = "knowledge.db"
+        self.db_path = str(PROJECT_ROOT / "knowledge.db")
         self._init_db()
         self.vector_service = VectorService()
     

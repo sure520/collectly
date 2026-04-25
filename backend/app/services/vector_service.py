@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from typing import List, Dict, Optional
@@ -8,6 +9,9 @@ from app.utils.logger import get_logger
 
 settings = get_settings()
 logger = get_logger("vector_service")
+
+# 项目根目录
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 
 class VectorService:
@@ -28,10 +32,7 @@ class VectorService:
         Args:
             persist_directory: 向量数据库持久化目录，默认使用./chroma_data
         """
-        self.persist_dir = persist_directory or os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
-            "chroma_data"
-        )
+        self.persist_dir = persist_directory or str(PROJECT_ROOT / "chroma_data")
         
         os.makedirs(self.persist_dir, exist_ok=True)
         

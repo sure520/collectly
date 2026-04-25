@@ -1,9 +1,13 @@
 import os
+from pathlib import Path
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
-# 加载 .env 文件
-load_dotenv()
+# 项目根目录（collectly/）
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+
+# 加载项目根目录下的 .env 文件
+load_dotenv(PROJECT_ROOT / ".env")
 
 class Settings(BaseSettings):
     # TikHub API 配置
@@ -18,7 +22,7 @@ class Settings(BaseSettings):
     QDRANT_CLUSTER_ENDPOINT: str = os.getenv("QDRANT_CLUSTER_ENDPOINT", "")
     
     # 数据库配置
-    DATABASE_URL: str = "sqlite:///./knowledge.db"
+    DATABASE_URL: str = f"sqlite:///{PROJECT_ROOT / 'knowledge.db'}"
     
     # 应用配置
     APP_NAME: str = "AI 知识收藏与检索管家"

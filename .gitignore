@@ -122,3 +122,4 @@ vendor/
 tests/test_url.txt
 backend/chroma_data/
 *.bin
+.trae/

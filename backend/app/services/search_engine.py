@@ -1,13 +1,17 @@
 import sqlite3
 import json
+from pathlib import Path
 from typing import List, Optional
 from datetime import date
 from app.models.schemas import SearchResult
 from app.services.vector_service import VectorService
 
+# 项目根目录
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+
 class SearchEngine:
     def __init__(self):
-        self.db_path = "knowledge.db"
+        self.db_path = str(PROJECT_ROOT / "knowledge.db")
         self.vector_service = VectorService()
     
     async def search(

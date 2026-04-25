@@ -1,6 +1,14 @@
+import sys
+from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+
+# 将 backend 目录添加到模块搜索路径，支持从项目根目录启动
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+
 from app.api import routes
 from app.services.platform_parser import PlatformParser
 from app.utils.config import get_settings

@@ -80,4 +80,4 @@ Write-Host ""
 Write-Host "按 Ctrl+C 停止服务" -ForegroundColor Yellow
 Write-Host ""
 
-& $uvicorn app.main:app --host 0.0.0.0 --port $backendPort --reload --log-level info
+& $uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --reload --log-level info

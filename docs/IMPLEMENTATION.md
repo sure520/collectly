@@ -48,16 +48,18 @@ collectly/
 │   │   │   ├── logger.py          # 日志工具
 │   │   │   └── exceptions.py      # 异常处理
 │   │   └── main.py                 # 应用入口
-│   ├── requirements.txt            # Python 依赖
-│   └── test_*.py                   # 测试脚本
-├── src/
-│   ├── components/                  # React 组件
-│   ├── hooks/                      # 自定义 Hooks
-│   ├── utils/                      # 工具函数
-│   ├── types/                      # TypeScript 类型定义
-│   └── App.tsx                     # 应用入口
-└── docs/
-    └── api_response_format/        # API 响应格式示例
+│   └── tests/                      # 后端测试脚本
+├── src/                            # 前端源码
+├── docs/                           # 文档
+├── start.bat                       # Windows 启动脚本
+├── start.ps1                       # PowerShell 启动脚本
+├── Dockerfile                      # Docker 构建文件
+├── docker-compose.yml              # Docker Compose 配置
+├── deploy.ps1                      # 一键部署脚本 (Windows)
+├── deploy.sh                       # 一键部署脚本 (Linux/macOS)
+├── .env.example                    # 环境变量模板
+├── requirements.txt                # Python 依赖
+└── pyproject.toml                  # Python 项目配置
 ```
 
 ## 快速开始
@@ -70,28 +72,21 @@ collectly/
 
 ### 后端设置
 
-1. 进入后端目录：
-   ```bash
-   cd backend
-   ```
-
-2. 安装依赖：
+1. 安装依赖（在项目根目录）：
    ```bash
    pip install -r requirements.txt
    ```
 
-3. 配置环境变量：
-   编辑 `backend/.env` 文件，添加必要的 API 密钥：
+2. 配置环境变量：
+   编辑项目根目录的 `.env` 文件（可从 `.env.example` 复制），添加必要的 API 密钥：
    ```
    TIKHUB_API_KEY=your_api_key
    DASHSCOPE_API_KEY=your_api_key
-   QDRANT_API_KEY=your_api_key
-   QDRANT_CLUSTER_ENDPOINT=your_endpoint
    ```
 
-4. 启动后端服务：
+3. 启动后端服务：
    ```bash
-   python -m uvicorn app.main:app --reload --port 8000
+   python -m uvicorn backend.app.main:app --reload --port 8000
    ```
 
 ### 前端设置
@@ -329,7 +324,7 @@ Response:
 
 ### 日志配置
 
-日志文件存储在 `backend/logs/` 目录下，按日期命名。
+日志文件存储在项目根目录的 `logs/` 目录下，按日期命名。
 
 日志级别：
 - DEBUG：详细调试信息

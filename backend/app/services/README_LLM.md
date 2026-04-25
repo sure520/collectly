@@ -21,7 +21,7 @@
 
 ### 1. 配置 API Key
 
-在 `.env` 文件中配置 DashScope API Key:
+在项目根目录的 `.env` 文件中配置 DashScope API Key:
 
 ```env
 DASHSCOPE_API_KEY=your_api_key_here
@@ -188,13 +188,12 @@ async def robust_process(content):
 
 运行测试:
 ```bash
-cd backend
-python -m pytest tests/test_llm_service.py -v
+python -m pytest backend/tests/test_llm_service.py -v
 ```
 
 或运行独立测试:
 ```bash
-python tests/test_llm_service.py
+python backend/tests/test_llm_service.py
 ```
 
 ## 示例代码

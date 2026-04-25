@@ -91,8 +91,7 @@ collectly/
 │   │   │   ├── learning_manager.py    # 状态与进度追踪
 │   │   │   └── llm_service.py         # DashScope AI 集成
 │   │   └── utils/
-│   ├── tests/
-│   └── requirements.txt
+│   └── tests/
 │
 ├── python-parser/              # 独立解析服务
 │   ├── main.py
@@ -100,7 +99,17 @@ collectly/
 │   ├── summarizer.py
 │   └── requirements.txt
 │
-└── tests/                      # 平台特定测试
+├── tests/                      # 平台特定测试
+│
+├── start.bat                   # Windows 启动脚本
+├── start.ps1                   # PowerShell 启动脚本
+├── Dockerfile                  # Docker 构建文件
+├── docker-compose.yml          # Docker Compose 配置
+├── deploy.ps1                  # 一键部署脚本 (Windows)
+├── deploy.sh                   # 一键部署脚本 (Linux/macOS)
+├── .env.example                # 环境变量模板
+├── requirements.txt            # Python 依赖
+└── pyproject.toml              # Python 项目配置
 ```
 
 ## 快速开始
@@ -156,8 +165,8 @@ git clone <仓库地址>
 cd collectly
 
 # 配置环境变量
-cp backend/.env.example backend/.env
-# 编辑 backend/.env 填入 API 密钥
+cp .env.example .env
+# 编辑 .env 填入 API 密钥
 
 # 一键启动
 docker-compose up -d
@@ -182,7 +191,6 @@ git clone <仓库地址>
 cd collectly
 
 # 设置后端
-cd backend
 python -m venv .venv
 .venv\Scripts\activate  # Windows
 source .venv/bin/activate  # Linux/macOS
@@ -195,9 +203,9 @@ cp .env.example .env
 # 启动后端（终端 1）
 .\start.bat  # Windows
 # 或
-./start.sh  # Linux/macOS
+.\start.ps1  # PowerShell
 # 或
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 
 # 构建并启动前端（终端 2）
 cd ..

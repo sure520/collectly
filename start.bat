@@ -6,7 +6,7 @@ echo  Collectly 后端启动脚本
 echo ============================================
 echo.
 
-:: 切换到脚本所在目录
+:: 切换到脚本所在目录（项目根目录）
 cd /d "%~dp0"
 
 :: 检查 .env 文件
@@ -66,7 +66,7 @@ echo.
 echo 按 Ctrl+C 停止服务
 echo.
 
-:: 启动服务
-.venv\Scripts\uvicorn app.main:app --host 0.0.0.0 --port %PORT% --reload --log-level info
+:: 启动服务（从项目根目录运行 uvicorn，指向 backend.app.main）
+.venv\Scripts\uvicorn backend.app.main:app --host 0.0.0.0 --port %PORT% --reload --log-level info
 
 pause
