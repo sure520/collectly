@@ -1,0 +1,138 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Shell scripts must always use LF line endings
+*.sh text eol=lf
+
+# Batch files must always use CRLF line endings
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# PowerShell scripts
+*.ps1 text eol=crlf
+
+# Python source files
+*.py text diff=python
+
+# JavaScript / TypeScript / JSX / TSX
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.json text
+*.mjs text
+*.cjs text
+
+# Web
+*.html text diff=html
+*.css text
+*.scss text
+*.less text
+*.vue text
+
+# Markdown / Documentation
+*.md text diff=markdown
+*.yaml text
+*.yml text
+*.toml text
+*.cfg text
+*.ini text
+*.conf text
+
+# Docker
+Dockerfile text
+Dockerfile.* text
+*.dockerfile text
+
+# Git
+.gitignore text
+.gitattributes text
+.gitmodules text
+
+# Makefile
+Makefile text
+makefile text
+GNUmakefile text
+
+# Java / Kotlin
+*.java text
+*.kt text
+*.kts text
+
+# Go
+*.go text
+
+# Rust
+*.rs text
+
+# C / C++
+*.c text
+*.h text
+*.cpp text
+*.hpp text
+*.cc text
+*.hh text
+
+# SQL
+*.sql text
+
+# Images - binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.webp binary
+*.bmp binary
+
+# Fonts - binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+
+# Archives - binary
+*.zip binary
+*.tar.gz binary
+*.tgz binary
+*.rar binary
+*.7z binary
+*.gz binary
+*.bz2 binary
+
+# Audio / Video - binary
+*.mp3 binary
+*.mp4 binary
+*.avi binary
+*.mov binary
+*.wav binary
+*.flac binary
+*.ogg binary
+
+# Documents - binary
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
+# Compiled / Generated files
+*.pyc binary
+*.pyo binary
+*.pyd binary
+*.class binary
+*.jar binary
+*.war binary
+*.ear binary
+*.o binary
+*.obj binary
+*.so binary
+*.dll binary
+*.dylib binary
+*.exe binary
+*.lib binary
+*.a binary
