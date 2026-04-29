@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     QDRANT_API_KEY: str = os.getenv("QDRANT_API_KEY", "")
     QDRANT_CLUSTER_ENDPOINT: str = os.getenv("QDRANT_CLUSTER_ENDPOINT", "")
     
+    # Embedding 模型配置
+    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "text-embedding-v4")
+    EMBEDDING_API_KEY: str = os.getenv("EMBEDDING_API_KEY", "")
+    EMBEDDING_API_ENDPOINT: str = os.getenv("EMBEDDING_API_ENDPOINT", "")
+    
     # 数据库配置
     DATABASE_URL: str = f"sqlite:///{PROJECT_ROOT / 'knowledge.db'}"
     

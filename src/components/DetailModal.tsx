@@ -64,7 +64,14 @@ export function DetailModal({ item, isOpen, onClose, onUpdateStatus, onUpdateNot
             </div>
 
             <div className="flex-1 overflow-y-auto p-6">
-              <h2 className="text-xl font-bold mb-2">{item.title}</h2>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xl font-bold mb-2 text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                {item.title}
+              </a>
               <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
                 <span>{item.author}</span>
                 <span>{formatDate(item.publish_time)}</span>

@@ -47,9 +47,15 @@ export function KnowledgeCard({ item, onView, onEdit, onDelete }: KnowledgeCardP
           </div>
         </div>
 
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 leading-tight">
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="block font-semibold text-blue-600 hover:text-blue-800 mb-2 line-clamp-2 leading-tight transition-colors"
+        >
           {item.title}
-        </h3>
+        </a>
 
         <p className="text-sm text-gray-600 mb-3 line-clamp-2">
           {truncateText(item.short_summary, 80)}

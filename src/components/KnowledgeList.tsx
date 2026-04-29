@@ -81,7 +81,15 @@ export function KnowledgeList({ items, onItemClick, onStatusChange }: KnowledgeL
                 </span>
               </div>
 
-              <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{item.title}</h3>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="block font-semibold text-blue-600 hover:text-blue-800 mb-2 line-clamp-2 transition-colors"
+              >
+                {item.title}
+              </a>
 
               <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.short_summary}</p>
 

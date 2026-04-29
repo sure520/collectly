@@ -1,84 +1,164 @@
 import os
+import time
 from pathlib import Path
+from typing import List, Dict, Optional, Sequence
+import dashscope
+from chromadb import EmbeddingFunction, Embeddings
+from chromadb.api.types import Embeddable
 import chromadb
-from chromadb.config import Settings as ChromaSettings
-from typing import List, Dict, Optional
-import numpy as np
 from app.utils.config import get_settings
 from app.utils.logger import get_logger
 
 settings = get_settings()
 logger = get_logger("vector_service")
 
-# 项目根目录
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+
+
+class CustomEmbeddingFunction(EmbeddingFunction):
+    """
+    自定义嵌入函数：基于 DashScope TextEmbedding API
+    
+    使用 .env 中 EMBEDDING_MODEL 配置的模型，默认 text-embedding-v4，
+    通过 DASHSCOPE_API_KEY 鉴权调用
+    """
+
+    DEFAULT_MODEL = "text-embedding-v4"
+    MAX_RETRIES = 3
+    RETRY_DELAY_BASE = 1.0
+    BATCH_SIZE = 25
+    MAX_TOKENS = 8000
+
+    def __init__(self):
+        self.model = settings.EMBEDDING_MODEL or self.DEFAULT_MODEL
+        self.api_key = settings.DASHSCOPE_API_KEY
+
+        if not self.api_key:
+            raise RuntimeError("DashScope API Key (DASHSCOPE_API_KEY) 未配置")
+
+        dashscope.api_key = self.api_key
+        logger.info(f"EmbeddingFunction 初始化: model={self.model}")
+
+    def _truncate_texts(self, texts: Sequence[str]) -> List[str]:
+        return [text[:self.MAX_TOKENS] if len(text) > self.MAX_TOKENS else text for text in texts]
+
+    def _call_dashscope(self, texts: List[str]) -> List[List[float]]:
+        last_error = None
+        for attempt in range(self.MAX_RETRIES):
+            try:
+                resp = dashscope.TextEmbedding.call(
+                    model=self.model,
+                    input=texts,
+                )
+
+                if resp.status_code == 200:
+                    embeddings = [
+                        item["embedding"] for item in resp.output.get("embeddings", [])
+                    ]
+                    return embeddings
+
+                if resp.status_code == 429:
+                    wait_time = self.RETRY_DELAY_BASE * (2 ** attempt)
+                    logger.warning(f"DashScope 限流 (429)，等待 {wait_time:.1f}s 后重试")
+                    time.sleep(wait_time)
+                    continue
+
+                if resp.status_code >= 500:
+                    wait_time = self.RETRY_DELAY_BASE * (2 ** attempt)
+                    logger.warning(
+                        f"DashScope 服务端错误 ({resp.status_code})，等待 {wait_time:.1f}s 后重试"
+                    )
+                    time.sleep(wait_time)
+                    continue
+
+                error_msg = (
+                    f"DashScope 返回错误: status={resp.status_code}, "
+                    f"code={resp.code}, message={resp.message}"
+                )
+                logger.error(error_msg)
+                last_error = error_msg
+                break
+
+            except Exception as e:
+                logger.error(f"DashScope 调用异常: {e}")
+                last_error = str(e)
+
+        raise RuntimeError(f"DashScope Embedding 调用失败，已重试 {self.MAX_RETRIES} 次: {last_error}")
+
+    def _batch_generate(self, texts: Sequence[str]) -> Embeddings:
+        text_list = self._truncate_texts(texts)
+
+        for i in range(0, len(text_list), self.BATCH_SIZE):
+            batch = text_list[i:i + self.BATCH_SIZE]
+            logger.info(f"Embedding batch {i // self.BATCH_SIZE + 1}, 共 {len(batch)} 条")
+            embeddings = self._call_dashscope(batch)
+            if embeddings and len(embeddings) == len(batch):
+                return embeddings
+
+        raise RuntimeError("无法生成嵌入向量")
+
+    def __call__(self, input: Embeddable) -> Embeddings:
+        texts = input if isinstance(input, list) else [input]
+        if not texts:
+            return []
+
+        try:
+            return self._batch_generate(texts)
+        except Exception as e:
+            logger.error(f"生成嵌入向量失败: {e}")
+            raise
 
 
 class VectorService:
     """
-    Chroma向量数据库服务
-    
-    提供内容向量化存储和语义检索功能
-    使用本地持久化存储，支持增量更新
+    向量数据库服务
+
+    基于 ChromaDB 提供内容向量化存储和语义检索功能
+    使用 CustomEmbeddingFunction 通过 DashScope 生成嵌入向量
     """
-    
+
     COLLECTION_NAME = "knowledge_embeddings"
-    EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-    
+
     def __init__(self, persist_directory: Optional[str] = None):
-        """
-        初始化向量服务
-        
-        Args:
-            persist_directory: 向量数据库持久化目录，默认使用./chroma_data
-        """
         self.persist_dir = persist_directory or str(PROJECT_ROOT / "chroma_data")
-        
+
         os.makedirs(self.persist_dir, exist_ok=True)
-        
+
+        self.embedding_function = CustomEmbeddingFunction()
+
         self.client = chromadb.PersistentClient(
             path=self.persist_dir,
             settings=chromadb.config.Settings(
                 anonymized_telemetry=False
             )
         )
-        
+
         self.collection = self.client.get_or_create_collection(
             name=self.COLLECTION_NAME,
+            embedding_function=self.embedding_function,
             metadata={"hnsw:space": "cosine"}
         )
-        
+
         logger.info(f"向量服务初始化完成，持久化目录: {self.persist_dir}")
         logger.info(f"当前集合文档数量: {self.collection.count()}")
-    
+
     def add_embedding(
         self,
         content_id: str,
         text: str,
         metadata: Optional[Dict] = None
     ) -> bool:
-        """
-        添加内容向量
-        
-        Args:
-            content_id: 内容ID
-            text: 用于向量化的文本内容
-            metadata: 附加元数据
-            
-        Returns:
-            是否添加成功
-        """
         try:
             if not text or not text.strip():
                 logger.warning(f"内容为空，跳过向量化: {content_id}")
                 return False
-            
+
             embeddings_data = {
                 "documents": [text],
                 "ids": [content_id],
                 "metadatas": [metadata or {}]
             }
-            
+
             existing = self.collection.get(ids=[content_id])
             if existing and existing["ids"]:
                 logger.info(f"更新已存在的向量: {content_id}")
@@ -86,47 +166,36 @@ class VectorService:
             else:
                 logger.info(f"添加新向量: {content_id}")
                 self.collection.add(**embeddings_data)
-            
+
             return True
-            
+
         except Exception as e:
             logger.error(f"添加向量失败 {content_id}: {str(e)}")
             return False
-    
+
     def search(
         self,
         query: str,
         n_results: int = 10,
         where: Optional[Dict] = None
     ) -> List[Dict]:
-        """
-        语义搜索
-        
-        Args:
-            query: 查询文本
-            n_results: 返回结果数量
-            where: 过滤条件
-            
-        Returns:
-            搜索结果列表
-        """
         try:
             if not query or not query.strip():
                 return []
-            
+
             query_params = {
                 "query_texts": [query],
                 "n_results": min(n_results, self.collection.count() or 100)
             }
-            
+
             if where:
                 query_params["where"] = where
-            
+
             results = self.collection.query(**query_params)
-            
+
             if not results or not results["ids"] or not results["ids"][0]:
                 return []
-            
+
             formatted_results = []
             for i, doc_id in enumerate(results["ids"][0]):
                 result = {
@@ -136,23 +205,14 @@ class VectorService:
                     "metadata": results["metadatas"][0][i] if results.get("metadatas") else {}
                 }
                 formatted_results.append(result)
-            
+
             return formatted_results
-            
+
         except Exception as e:
             logger.error(f"语义搜索失败: {str(e)}")
             return []
-    
+
     def delete_embedding(self, content_id: str) -> bool:
-        """
-        删除内容向量
-        
-        Args:
-            content_id: 内容ID
-            
-        Returns:
-            是否删除成功
-        """
         try:
             self.collection.delete(ids=[content_id])
             logger.info(f"删除向量: {content_id}")
@@ -160,17 +220,16 @@ class VectorService:
         except Exception as e:
             logger.error(f"删除向量失败 {content_id}: {str(e)}")
             return False
-    
+
     def get_collection_size(self) -> int:
-        """获取集合中文档数量"""
         return self.collection.count()
-    
+
     def reset_collection(self) -> bool:
-        """重置整个集合（慎用）"""
         try:
             self.client.delete_collection(name=self.COLLECTION_NAME)
             self.collection = self.client.create_collection(
                 name=self.COLLECTION_NAME,
+                embedding_function=self.embedding_function,
                 metadata={"hnsw:space": "cosine"}
             )
             logger.info("向量集合已重置")
