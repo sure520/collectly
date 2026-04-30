@@ -12,6 +12,10 @@ RUN npm install
 # 复制源码
 COPY . .
 
+# 设置 API 基础 URL 为相对路径，通过 Nginx 反向代理访问后端
+ARG REACT_APP_API_BASE_URL=/api
+ENV REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+
 # 构建前端
 RUN npm run build
 

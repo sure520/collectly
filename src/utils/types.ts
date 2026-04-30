@@ -37,13 +37,13 @@ export interface SearchResult {
   summary: string;
   author: string;
   source: string;
+  url: string;
   update: string;
   create_time: string;
   tags: string[];
   knowledge_points: string[];
   learning_status: string;
   relevance_score: number;
-  url?: string;
 }
 
 // 学习状态更新类型

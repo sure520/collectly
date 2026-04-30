@@ -51,7 +51,6 @@ export function KnowledgeCard({ item, onView, onEdit, onDelete }: KnowledgeCardP
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
           className="block font-semibold text-blue-600 hover:text-blue-800 mb-2 line-clamp-2 leading-tight transition-colors"
         >
           {item.title}

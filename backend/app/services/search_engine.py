@@ -112,6 +112,7 @@ class SearchEngine:
                 summary=content.get("summary", ""),
                 author=content.get("author", ""),
                 source=content.get("source", ""),
+                url=content.get("url", ""),
                 update=content.get("update_date", ""),
                 create_time=content.get("create_date", ""),
                 tags=json.loads(content["tags"]) if content.get("tags") else [],
@@ -183,7 +184,7 @@ class SearchEngine:
             cursor = conn.cursor()
             sql = f"""
                 SELECT c.id, c.title, c.summary, c.author, c.source, c.update_date, c.create_date, 
-                       c.tags, c.knowledge_points, ls.status
+                       c.tags, c.knowledge_points, c.url, ls.status
                 FROM content c
                 LEFT JOIN learning_status ls ON c.id = ls.content_id
                 {query}
@@ -202,11 +203,12 @@ class SearchEngine:
                     summary=row[2],
                     author=row[3],
                     source=row[4],
+                    url=row[9],
                     update=row[5],
                     create_time=row[6],
                     tags=json.loads(row[7]) if row[7] else [],
                     knowledge_points=json.loads(row[8]) if row[8] else [],
-                    learning_status=row[9] or "未读",
+                    learning_status=row[10] or "未读",
                     relevance_score=round(relevance_score, 4)
                 ))
             
@@ -271,7 +273,7 @@ class SearchEngine:
             cursor = conn.cursor()
             cursor.execute(f'''
                 SELECT c.id, c.title, c.summary, c.author, c.source, c.update_date, c.create_date, 
-                       c.tags, c.knowledge_points, c.content, ls.status
+                       c.tags, c.knowledge_points, c.content, c.url, ls.status
                 FROM content c
                 LEFT JOIN learning_status ls ON c.id = ls.content_id
                 WHERE c.id IN ({placeholders})
@@ -291,7 +293,8 @@ class SearchEngine:
                     "tags": row[7],
                     "knowledge_points": row[8],
                     "content": row[9],
-                    "status": row[10]
+                    "url": row[10],
+                    "status": row[11]
                 })
             
             return results
@@ -344,6 +347,7 @@ class SearchEngine:
                 summary=content.get("summary", ""),
                 author=content.get("author", ""),
                 source=content.get("source", ""),
+                url=content.get("url", ""),
                 update=content.get("update_date", ""),
                 create_time=content.get("create_date", ""),
                 tags=json.loads(content["tags"]) if content.get("tags") else [],
@@ -389,7 +393,7 @@ class SearchEngine:
             
             cursor.execute(f"""
                 SELECT c.id, c.title, c.summary, c.author, c.source, c.update_date, c.create_date, 
-                       c.tags, c.knowledge_points, ls.status
+                       c.tags, c.knowledge_points, c.url, ls.status
                 FROM content c
                 LEFT JOIN learning_status ls ON c.id = ls.content_id
                 {query}
@@ -406,11 +410,12 @@ class SearchEngine:
                     summary=row[2],
                     author=row[3],
                     source=row[4],
+                    url=row[9],
                     update=row[5],
                     create_time=row[6],
                     tags=json.loads(row[7]) if row[7] else [],
                     knowledge_points=json.loads(row[8]) if row[8] else [],
-                    learning_status=row[9] or "未读",
+                    learning_status=row[10] or "未读",
                     relevance_score=0.0
                 ))
             
@@ -422,7 +427,7 @@ class SearchEngine:
             cursor = conn.cursor()
             cursor.execute('''
                 SELECT c.id, c.title, c.summary, c.author, c.source, c.update_date, c.create_date, 
-                       c.tags, c.knowledge_points, ls.status
+                       c.tags, c.knowledge_points, c.url, ls.status
                 FROM content c
                 LEFT JOIN learning_status ls ON c.id = ls.content_id
                 WHERE ls.status != '已读'
@@ -439,11 +444,12 @@ class SearchEngine:
                     summary=row[2],
                     author=row[3],
                     source=row[4],
+                    url=row[9],
                     update=row[5],
                     create_time=row[6],
                     tags=json.loads(row[7]) if row[7] else [],
                     knowledge_points=json.loads(row[8]) if row[8] else [],
-                    learning_status=row[9] or "未读",
+                    learning_status=row[10] or "未读",
                     relevance_score=0.0
                 ))
             

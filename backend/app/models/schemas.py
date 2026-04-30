@@ -38,6 +38,7 @@ class SearchResult(BaseModel):
     summary: str = Field(..., description="摘要")
     author: str = Field(..., description="作者")
     source: str = Field(..., description="来源平台")
+    url: str = Field(..., description="原文链接")
     update: str = Field(..., description="更新时间")
     create_time: str = Field(..., description="创建时间")
     tags: List[str] = Field(default_factory=list, description="标签")
