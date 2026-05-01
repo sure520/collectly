@@ -108,19 +108,40 @@ def test_extract_knowledge_points():
         return False
 
 
+TEST_AUDIO_URL = "https://lf26-music-east.douyinstatic.com/obj/ies-music-hj/7624822077157083953.mp3"
+
+
 def test_speech_to_text():
     """测试语音转文字功能"""
     print("\n=== 测试语音转文字 ===")
     
     llm = LLMService()
     
-    # 注意：这里需要一个有效的音频 URL
-    # 可以使用测试音频 URL 或本地路径
-    test_audio_url = "https://example.com/test-audio.wav"  # 示例 URL
+    try:
+        text = llm.speech_to_text(TEST_AUDIO_URL, language="zh")
+        print(f"✓ 语音识别成功:")
+        print(f"  {text}")
+        return True
+    except LLMServiceValidationError as e:
+        print(f"✗ 输入校验失败：{e.message}")
+        return False
+    except LLMServiceError as e:
+        print(f"✗ API 调用失败：{e.message} (错误码：{e.error_code})")
+        return False
+    except Exception as e:
+        print(f"✗ 未知错误：{str(e)}")
+        return False
+
+
+def test_speech_to_text_with_max_duration():
+    """测试语音转文字的音频时长限制功能（限制前 30 秒）"""
+    print("\n=== 测试语音转文字（max_duration 限制 30 秒） ===")
+    
+    llm = LLMService()
     
     try:
-        text = llm.speech_to_text(test_audio_url)
-        print(f"✓ 语音识别成功:")
+        text = llm.speech_to_text(TEST_AUDIO_URL, language="zh", max_duration=30)
+        print(f"✓ 语音识别成功（限制 30 秒）:")
         print(f"  {text}")
         return True
     except LLMServiceValidationError as e:
@@ -210,6 +231,7 @@ def main():
         "标签生成": test_generate_tags(),
         "知识点提取": test_extract_knowledge_points(),
         "语音转文字": test_speech_to_text(),
+        "语音转文字(max_duration限制)": test_speech_to_text_with_max_duration(),
         "错误处理": test_error_handling(),
         "集成测试": test_platform_parser_integration()
     }

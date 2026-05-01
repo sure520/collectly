@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import List, Optional
 from datetime import date
-from app.models.schemas import SearchResult
+from app.models.schemas import SearchResult, PaginatedSearchResult
 from app.services.vector_service import VectorService
 
 # 项目根目录
@@ -24,35 +24,34 @@ class SearchEngine:
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
         learning_status: Optional[str] = None,
-        use_semantic: bool = True
-    ) -> List[SearchResult]:
-        """
-        混合检索内容：关键词 + 向量语义
-        
-        Args:
-            text: 搜索文本
-            domains: 领域筛选
-            sources: 来源筛选
-            difficulty: 难度筛选
-            content_type: 内容类型筛选
-            start_date: 开始日期
-            end_date: 结束日期
-            learning_status: 学习状态筛选
-            use_semantic: 是否使用语义检索，默认True
-        
-        Returns:
-            搜索结果列表
-        """
+        use_semantic: bool = True,
+        page: int = 1,
+        page_size: int = 20
+    ) -> PaginatedSearchResult:
         if text and use_semantic:
-            return await self._hybrid_search(
+            all_results = await self._hybrid_search(
                 text, domains, sources, difficulty, content_type,
                 start_date, end_date, learning_status
             )
         else:
-            return await self._keyword_search(
+            all_results = await self._keyword_search(
                 text, domains, sources, difficulty, content_type,
                 start_date, end_date, learning_status
             )
+
+        total = len(all_results)
+        total_pages = max(1, (total + page_size - 1) // page_size)
+        start = (page - 1) * page_size
+        end = start + page_size
+        items = all_results[start:end]
+
+        return PaginatedSearchResult(
+            items=items,
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages
+        )
     
     async def _hybrid_search(
         self,

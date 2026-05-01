@@ -30,6 +30,8 @@ class SearchQuery(BaseModel):
     end_date: Optional[date] = Field(default=None, description="结束日期")
     learning_status: Optional[str] = Field(default=None, description="学习状态筛选")
     use_semantic: Optional[bool] = Field(default=True, description="是否使用语义检索")
+    page: Optional[int] = Field(default=1, ge=1, description="页码")
+    page_size: Optional[int] = Field(default=20, ge=1, le=100, description="每页数量")
 
 # 搜索结果模型
 class SearchResult(BaseModel):
@@ -45,6 +47,14 @@ class SearchResult(BaseModel):
     knowledge_points: List[str] = Field(default_factory=list, description="知识点")
     learning_status: str = Field(default="未读", description="学习状态")
     relevance_score: float = Field(..., description="相关度分数")
+
+# 分页搜索响应模型
+class PaginatedSearchResult(BaseModel):
+    items: List[SearchResult] = Field(default_factory=list, description="搜索结果列表")
+    total: int = Field(..., description="总条数")
+    page: int = Field(..., description="当前页码")
+    page_size: int = Field(..., description="每页数量")
+    total_pages: int = Field(..., description="总页数")
 
 # 学习状态更新模型
 class LearningStatusUpdate(BaseModel):

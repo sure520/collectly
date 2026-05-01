@@ -1,5 +1,5 @@
 {
-  "test_time": "2026-04-25T14:20:48.005932",
+  "test_time": "2026-04-30T17:13:17.061411",
   "tests": [
     {
       "name": "向量服务",
@@ -9,12 +9,12 @@
     {
       "name": "内容管理",
       "success": true,
-      "content_count": 1
+      "content_count": 9
     },
     {
       "name": "搜索引擎",
       "success": true,
-      "keyword_count": 1,
+      "keyword_count": 6,
       "semantic_count": 1
     }
   ],

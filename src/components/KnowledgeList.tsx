@@ -4,14 +4,21 @@ import { Grid3X3, List, ExternalLink, Bookmark, Clock, Tag } from 'lucide-react'
 import type { KnowledgeItem, ViewMode, SortBy, LearningStatus } from '../types';
 import { getPlatformName, getPlatformIcon, getPlatformColor } from '../utils/platform';
 import { getDifficultyName, getDifficultyColor, getStatusName, getStatusColor, formatDate, truncateText } from '../utils/format';
+import { Pagination } from './Pagination';
 
 interface KnowledgeListProps {
   items: KnowledgeItem[];
   onItemClick: (item: KnowledgeItem) => void;
   onStatusChange: (id: string, status: LearningStatus) => void;
+  page?: number;
+  pageSize?: number;
+  total?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
 }
 
-export function KnowledgeList({ items, onItemClick, onStatusChange }: KnowledgeListProps) {
+export function KnowledgeList({ items, onItemClick, onStatusChange, page, pageSize, total, totalPages, onPageChange, onPageSizeChange }: KnowledgeListProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [sortBy, setSortBy] = useState<SortBy>('created_at');
 
@@ -25,11 +32,13 @@ export function KnowledgeList({ items, onItemClick, onStatusChange }: KnowledgeL
     return 0;
   });
 
+  const showPagination = page !== undefined && total !== undefined && total > 0;
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4 px-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">共 {items.length} 条</span>
+          <span className="text-sm text-gray-500">共 {total ?? items.length} 条</span>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -130,6 +139,19 @@ export function KnowledgeList({ items, onItemClick, onStatusChange }: KnowledgeL
           </motion.div>
         ))}
       </div>
+
+      {showPagination && page && total && totalPages && onPageChange && (
+        <div className="mt-4">
+          <Pagination
+            page={page}
+            pageSize={pageSize || 20}
+            total={total}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        </div>
+      )}
 
       {items.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-gray-400">

@@ -15,6 +15,14 @@ logger = get_logger("vector_service")
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 
+MODEL_DIMENSIONS = {
+    "text-embedding-v1": 1536,
+    "text-embedding-v2": 1536,
+    "text-embedding-v3": 1024,
+    "text-embedding-v4": 1024,
+}
+
+
 class CustomEmbeddingFunction(EmbeddingFunction):
     """
     自定义嵌入函数：基于 DashScope TextEmbedding API
@@ -37,7 +45,8 @@ class CustomEmbeddingFunction(EmbeddingFunction):
             raise RuntimeError("DashScope API Key (DASHSCOPE_API_KEY) 未配置")
 
         dashscope.api_key = self.api_key
-        logger.info(f"EmbeddingFunction 初始化: model={self.model}")
+        self.dimension = MODEL_DIMENSIONS.get(self.model)
+        logger.info(f"EmbeddingFunction 初始化: model={self.model}, dimension={self.dimension}")
 
     def _truncate_texts(self, texts: Sequence[str]) -> List[str]:
         return [text[:self.MAX_TOKENS] if len(text) > self.MAX_TOKENS else text for text in texts]
@@ -133,14 +142,59 @@ class VectorService:
             )
         )
 
-        self.collection = self.client.get_or_create_collection(
-            name=self.COLLECTION_NAME,
-            embedding_function=self.embedding_function,
-            metadata={"hnsw:space": "cosine"}
-        )
+        self._init_or_migrate_collection()
 
         logger.info(f"向量服务初始化完成，持久化目录: {self.persist_dir}")
         logger.info(f"当前集合文档数量: {self.collection.count()}")
+
+    def _init_or_migrate_collection(self):
+        self.needs_rebuild = False
+        try:
+            self.collection = self.client.get_collection(
+                name=self.COLLECTION_NAME,
+                embedding_function=self.embedding_function,
+            )
+            collection_dim = self._get_collection_dimension()
+            expected_dim = self.embedding_function.dimension
+
+            if expected_dim and collection_dim and collection_dim != expected_dim:
+                logger.warning(
+                    f"集合维度不匹配: 集合={collection_dim}, 模型={expected_dim}，"
+                    f"将重建向量集合"
+                )
+                self.client.delete_collection(name=self.COLLECTION_NAME)
+                self.collection = self.client.create_collection(
+                    name=self.COLLECTION_NAME,
+                    embedding_function=self.embedding_function,
+                    metadata={"hnsw:space": "cosine"}
+                )
+                self.needs_rebuild = True
+                logger.info("向量集合已重建")
+        except Exception:
+            self.collection = self.client.get_or_create_collection(
+                name=self.COLLECTION_NAME,
+                embedding_function=self.embedding_function,
+                metadata={"hnsw:space": "cosine"}
+            )
+
+    def _get_collection_dimension(self) -> Optional[int]:
+        try:
+            sample = self.collection.peek(limit=1)
+            if sample and sample.get("embeddings") is not None:
+                embeddings = sample["embeddings"]
+                if len(embeddings) > 0 and len(embeddings[0]) > 0:
+                    return len(embeddings[0])
+        except Exception:
+            pass
+
+        try:
+            metadata = self.collection.metadata
+            if metadata and "dimension" in metadata:
+                return metadata["dimension"]
+        except Exception:
+            pass
+
+        return None
 
     def add_embedding(
         self,

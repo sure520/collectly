@@ -1,4 +1,4 @@
-import type { ContentResponse, SearchQuery, SearchResult, LearningStatusUpdate, TagUpdate, NoteUpdate } from './types';
+import type { ContentResponse, SearchQuery, PaginatedSearchResult, LearningStatusUpdate, TagUpdate, NoteUpdate } from './types';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
 
@@ -54,7 +54,7 @@ export async function saveContent(content: ContentResponse): Promise<{ content_i
   return response.json();
 }
 
-export async function search(query: SearchQuery): Promise<SearchResult[]> {
+export async function search(query: SearchQuery): Promise<PaginatedSearchResult> {
   const response = await fetch(`${API_BASE_URL}/search`, {
     method: 'POST',
     headers: {
@@ -113,6 +113,18 @@ export async function updateNote(contentId: string, note: string): Promise<{ mes
   
   if (!response.ok) {
     throw new Error('更新笔记失败');
+  }
+  
+  return response.json();
+}
+
+export async function deleteContent(contentId: string): Promise<{ message: string }> {
+  const response = await fetch(`${API_BASE_URL}/content/${contentId}`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) {
+    throw new Error('删除内容失败');
   }
   
   return response.json();

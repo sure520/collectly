@@ -1,13 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.services.platform_parser import PlatformParser
+from app.services.platform_parser import PlatformParser, process_url
 from app.services.content_manager import ContentManager
 from app.services.search_engine import SearchEngine
 from app.services.learning_manager import LearningManager
 from app.models.schemas import (
     LinkInput, ContentResponse, SearchQuery, SearchResult,
-    LearningStatusUpdate, TagUpdate, NoteUpdate
+    PaginatedSearchResult, LearningStatusUpdate, TagUpdate, NoteUpdate
 )
 from typing import List
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -16,6 +17,28 @@ platform_parser = PlatformParser()
 content_manager = ContentManager()
 search_engine = SearchEngine()
 learning_manager = LearningManager()
+
+class CleanUrlRequest(BaseModel):
+    raw_texts: List[str]
+
+class CleanUrlResponse(BaseModel):
+    cleaned_url: str
+    is_valid: bool
+
+# URL 清理端点
+@router.post("/clean-urls", response_model=List[CleanUrlResponse])
+async def clean_urls(request: CleanUrlRequest):
+    """清理应用分享的文本，提取并还原真实 URL"""
+    results = []
+    for raw_text in request.raw_texts:
+        try:
+            cleaned_url = process_url(raw_text)
+            # 验证清理后的 URL 是否有效
+            is_valid = bool(cleaned_url and cleaned_url.startswith(('http://', 'https://')))
+            results.append(CleanUrlResponse(cleaned_url=cleaned_url, is_valid=is_valid))
+        except Exception:
+            results.append(CleanUrlResponse(cleaned_url=raw_text, is_valid=False))
+    return results
 
 # 链接解析端点
 @router.post("/parse-link", response_model=ContentResponse)
@@ -62,7 +85,7 @@ async def save_content(content: ContentResponse):
         raise HTTPException(status_code=400, detail=str(e))
 
 # 内容检索端点
-@router.post("/search", response_model=List[SearchResult])
+@router.post("/search", response_model=PaginatedSearchResult)
 async def search(query: SearchQuery):
     """智能检索内容"""
     try:
@@ -75,7 +98,9 @@ async def search(query: SearchQuery):
             start_date=query.start_date,
             end_date=query.end_date,
             learning_status=query.learning_status,
-            use_semantic=query.use_semantic
+            use_semantic=query.use_semantic,
+            page=query.page,
+            page_size=query.page_size
         )
         return results
     except Exception as e:
@@ -108,6 +133,21 @@ async def update_note(update: NoteUpdate):
     try:
         await learning_manager.update_note(update.content_id, update.note)
         return {"message": "更新成功"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+# 删除内容端点
+@router.delete("/content/{content_id}", response_model=dict)
+async def delete_content(content_id: str):
+    """删除内容"""
+    try:
+        success = await content_manager.delete(content_id)
+        if success:
+            return {"message": "删除成功"}
+        else:
+            raise HTTPException(status_code=404, detail="内容不存在")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

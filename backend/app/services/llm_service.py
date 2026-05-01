@@ -1,6 +1,9 @@
 import asyncio
 import time
 import os
+import tempfile
+import requests
+from pathlib import Path
 from typing import Optional, List, Dict, Any
 from http import HTTPStatus
 import dashscope
@@ -376,7 +379,82 @@ class LLMService:
             logger.error(f"提取知识点失败：{str(e)}")
             raise LLMServiceError(f"提取知识点失败：{str(e)}", error_code="EXTRACT_KNOWLEDGE_POINTS_ERROR")
     
-    def speech_to_text(self, audio_url: str, language: str = "zh", timeout: int = DEFAULT_TIMEOUT) -> str:
+    def _truncate_audio(self, audio_path: str, max_duration: int, request_id: str) -> str:
+        """将本地音频文件截断到指定时长（字节级截取，适合内容总结场景）"""
+        try:
+            from mutagen import File as MutagenFile
+            audio_meta = MutagenFile(audio_path)
+            if audio_meta is None or audio_meta.info is None:
+                logger.warning(f"[请求 {request_id}] 无法解析音频元信息，跳过截断")
+                return audio_path
+
+            total_duration = audio_meta.info.length
+            if total_duration <= max_duration:
+                logger.info(f"[请求 {request_id}] 音频时长 {total_duration:.1f}s 未超过 {max_duration}s，无需截断")
+                return audio_path
+
+            ratio = max_duration / total_duration
+            file_size = os.path.getsize(audio_path)
+            trunc_size = int(file_size * ratio)
+
+            truncated_path = os.path.join(
+                tempfile.gettempdir(),
+                f"asr_truncated_{request_id}{Path(audio_path).suffix}"
+            )
+            with open(audio_path, 'rb') as src:
+                data = src.read(trunc_size)
+            with open(truncated_path, 'wb') as dst:
+                dst.write(data)
+
+            logger.info(f"[请求 {request_id}] 音频截断：{total_duration:.1f}s -> {max_duration}s，字节：{file_size} -> {trunc_size}")
+            return truncated_path
+        except ImportError:
+            logger.warning(f"[请求 {request_id}] mutagen 未安装，无法截断音频")
+            return audio_path
+        except Exception as e:
+            logger.warning(f"[请求 {request_id}] 音频截断失败：{str(e)}，使用原始文件")
+            return audio_path
+
+    def _call_asr(self, audio_source: str, language: str, request_id: str):
+        """调用 ASR API，audio_source 可以是 URL 或本地文件路径"""
+        if os.path.isfile(audio_source):
+            audio_content = {"audio": f"file://{audio_source}"}
+        else:
+            audio_content = {"audio": audio_source}
+
+        messages = [
+            {
+                "role": Role.SYSTEM,
+                "content": [{"text": ""}]
+            },
+            {
+                "role": Role.USER,
+                "content": [audio_content]
+            }
+        ]
+
+        response = MultiModalConversation.call(
+            api_key=self.api_key,
+            model=self.ASR_MODEL_NAME,
+            messages=messages,
+            result_format="message",
+            asr_options={
+                "language": language,
+                "enable_lid": True,
+                "enable_itn": False
+            }
+        )
+
+        if response.status_code == HTTPStatus.OK:
+            return response.output["choices"][0]["message"]["content"][0]["text"]
+
+        raise LLMServiceError(
+            f"语音识别失败：{response.message}",
+            error_code=response.code,
+            status_code=response.status_code
+        )
+
+    def speech_to_text(self, audio_url: str, language: str = "zh", timeout: int = DEFAULT_TIMEOUT, max_duration: int = 300) -> str:
         """
         使用语音识别模型将音频转换为文字
         
@@ -384,6 +462,7 @@ class LLMService:
             audio_url: 音频文件的 URL 或本地路径
             language: 音频语种，默认中文（zh）
             timeout: 超时时间（秒）
+            max_duration: 音频最大时长（秒），超长时自动截断重试，默认 300
             
         Returns:
             识别出的文字
@@ -403,56 +482,54 @@ class LLMService:
         
         logger.info(f"[请求 {request_id}] 开始调用语音识别 API，模型：{self.ASR_MODEL_NAME}")
         logger.debug(f"[请求 {request_id}] 音频 URL：{audio_url}")
-        
-        messages = [
-            {
-                "role": Role.SYSTEM,
-                "content": [
-                    {"text": ""},
-                ]
-            },
-            {
-                "role": Role.USER,
-                "content": [
-                    {"audio": audio_url},
-                ]
-            }
-        ]
-        
+
         try:
-            response = MultiModalConversation.call(
-                api_key=self.api_key,
-                model=self.ASR_MODEL_NAME,
-                messages=messages,
-                result_format="message",
-                asr_options={
-                    "language": language,
-                    "enable_lid": True,
-                    "enable_itn": False
-                }
-            )
-            
+            text = self._call_asr(audio_url, language, request_id)
             elapsed_time = time.time() - start_time
-            
-            if response.status_code == HTTPStatus.OK:
-                text = response.output["choices"][0]["message"]["content"][0]["text"]
-                logger.info(f"[请求 {request_id}] 语音识别成功，耗时：{elapsed_time:.2f}秒，文本长度：{len(text)}")
-                return text
-            else:
-                logger.error(f"[请求 {request_id}] 语音识别失败，状态码：{response.status_code}")
-                logger.error(f"[请求 {request_id}] 错误码：{response.code}，错误信息：{response.message}")
-                raise LLMServiceError(
-                    f"语音识别失败：{response.message}",
-                    error_code=response.code,
-                    status_code=response.status_code
-                )
-                
+            logger.info(f"[请求 {request_id}] 语音识别成功，耗时：{elapsed_time:.2f}秒，文本长度：{len(text)}")
+            return text
+        except LLMServiceError as e:
+            is_audio_too_long = (
+                "too long" in (e.message or "").lower()
+                or "InvalidParameter" in (e.error_code or "")
+            )
+
+            if not is_audio_too_long:
+                raise
+
+            logger.info(f"[请求 {request_id}] 音频过长，启动兜底截断流程")
+
+        suffix = Path(audio_url.split("?")[0]).suffix or ".mp3"
+        tmp_original = os.path.join(tempfile.gettempdir(), f"asr_original_{request_id}{suffix}")
+        tmp_truncated = os.path.join(tempfile.gettempdir(), f"asr_truncated_{request_id}{suffix}")
+
+        try:
+            logger.info(f"[请求 {request_id}] 下载音频到临时文件：{tmp_original}")
+            resp = requests.get(audio_url, timeout=60, stream=True)
+            resp.raise_for_status()
+            with open(tmp_original, 'wb') as f:
+                for chunk in resp.iter_content(chunk_size=8192):
+                    f.write(chunk)
+
+            truncated_path = self._truncate_audio(tmp_original, max_duration, request_id)
+            text = self._call_asr(truncated_path, language, request_id)
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[请求 {request_id}] 截断重试成功，耗时：{elapsed_time:.2f}秒，文本长度：{len(text)}")
+            return text
         except LLMServiceError:
             raise
         except Exception as e:
             elapsed_time = time.time() - start_time
             logger.error(f"[请求 {request_id}] 语音识别异常，耗时：{elapsed_time:.2f}秒，错误：{str(e)}")
             raise LLMServiceError(f"语音识别异常：{str(e)}", error_code="ASR_ERROR")
+        finally:
+            for p in [tmp_original, tmp_truncated]:
+                if os.path.exists(p):
+                    try:
+                        os.remove(p)
+                    except OSError:
+                        pass
     
     def process_content(
         self,

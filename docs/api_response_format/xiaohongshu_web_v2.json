@@ -1,0 +1,355 @@
+{
+  "code": 200,
+  "request_id": "61f5600f-5bb3-4e4e-bcb7-74dcc8bade53",
+  "message": "Request successful. This request will incur a charge.",
+  "message_zh": "请求成功，本次请求将被计费。",
+  "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+  "time": "2026-04-30 07:37:00",
+  "time_stamp": 1777559820,
+  "time_zone": "America/Los_Angeles",
+  "docs": "https://api.tikhub.io/#/Xiaohongshu-Web-V2-API/fetch_feed_notes_v2_api_v1_xiaohongshu_web_v2_fetch_feed_notes_v2_get",
+  "cache_message": "This request will be cached. You can access the cached result directly using the URL below, valid for 24 hours. Accessing the cache will not incur additional charges.",
+  "cache_message_zh": "本次请求将被缓存，你可以使用下面的 URL 直接访问缓存结果，有效期为 24 小时，访问缓存不会产生额外费用。",
+  "cache_url": "https://cache.tikhub.io/api/v1/cache/public/61f5600f-5bb3-4e4e-bcb7-74dcc8bade53?sign=6ad5a8cc11369458ad4494114dbe82b18d5e8326af4b39656a6963c80e7a7223",
+  "router": "/api/v1/xiaohongshu/web_v2/fetch_feed_notes_v2",
+  "params": {
+    "note_id": "69cbc340000000001a02329e"
+  },
+  "data": {
+    "comment_list": [],
+    "model_type": "note",
+    "note_list": [
+      {
+        "api_upgrade": 1,
+        "ats": [],
+        "cny_red_envelope_note": false,
+        "co_produce_link": "xhsdiscover://post_new_note?source=%7B%22type%22%3A%22together_post%22%2C%22extraInfo%22%3A%7B%22subType%22%3A%22together_post_halfspace%22%2C%22track_id%22%3A%2269cbc340000000001a02329e%22%7D%7D&page=%7B%22page_type%22%3A%22image_co_produce_album%22%7D",
+        "collected": false,
+        "collected_count": 918,
+        "comments_count": 51,
+        "cooperate_binds": [],
+        "countdown": 0,
+        "cursor_score": "69cbc340000000001a02329e",
+        "desc": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像 multi-turn rollout、trajectory collection、grpo算法、trainer 这些环节，很多时候不是概念难，而是被埋在太重的系统里[失望R]\n\t\n[捂脸R]算是啃了一块硬骨头了吧，花了三周的时间，infra 太硬核了\n\t\nagentic rl 看起来很难，实际上确实难，但是只要有耐心 就不难[doge]\n\t\n项目在github已开源，下一步更新计划：\n[一R]off-policy\n[二R]使用工具的 env\n\t\n欢迎大佬们交流合作！\n\t\n#AGENT[话题]# #AgenticRL[话题]# #强化学习[话题]# #GRPO[话题]# #开源项目[话题]# #大模型[话题]# #小红书科技AMA[话题]#",
+        "enable_co_produce": true,
+        "foot_tags": [],
+        "has_co_produce": false,
+        "hash_tag": [
+          {
+            "bizId": "",
+            "current_score": 0,
+            "id": "629a03d500000000010055c7",
+            "link": "xhsdiscover://rn/sns-discover/topic/normal?id=629a03d58d87280001904afc&page_source=note_feed.click_new_big&topic_name=AGENT&source=normal&pre_source=explore",
+            "name": "AGENT",
+            "record_count": 0,
+            "record_emoji": "",
+            "record_unit": "",
+            "tag_hint": "",
+            "type": "topic"
+          },
+          {
+            "bizId": "",
+            "current_score": 0,
+            "id": "68ad8df3000000000600e306",
+            "link": "xhsdiscover://rn/sns-discover/topic/normal?id=68ad8df30063000000000002&page_source=note_feed.click_new_big&topic_name=AgenticRL&source=normal&pre_source=explore",
+            "name": "AgenticRL",
+            "record_count": 0,
+            "record_emoji": "",
+            "record_unit": "",
+            "tag_hint": "",
+            "type": "topic"
+          },
+          {
+            "bizId": "",
+            "current_score": 0,
+            "id": "610dfdd40000000001006323",
+            "link": "xhsdiscover://rn/sns-discover/topic/normal?id=610dfdd43756fe0001bdc610&page_source=note_feed.click_new_big&topic_name=%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0&source=normal&pre_source=explore",
+            "name": "强化学习",
+            "record_count": 0,
+            "record_emoji": "",
+            "record_unit": "",
+            "tag_hint": "",
+            "type": "topic"
+          },
+          {
+            "bizId": "",
+            "current_score": 0,
+            "id": "65c202d80000000013017081",
+            "link": "xhsdiscover://rn/sns-discover/topic/normal?id=65c202d8940770000196e024&page_source=note_feed.click_new_big&topic_name=GRPO&source=normal&pre_source=explore",
+            "name": "GRPO",
+            "record_count": 0,
+            "record_emoji": "",
+            "record_unit": "",
+            "tag_hint": "",
+            "type": "topic"
+          },
+          {
+            "bizId": "",
+            "current_score": 0,
+            "id": "601b709500000000010080ca",
+            "link": "xhsdiscover://rn/sns-discover/topic/normal?id=601b7096a95cb00001705dc7&page_source=note_feed.click_new_big&topic_name=%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE&source=normal&pre_source=explore",
+            "name": "开源项目",
+            "record_count": 0,
+            "record_emoji": "",
+            "record_unit": "",
+            "tag_hint": "",
+            "type": "topic"
+          },
+          {
+            "bizId": "",
+            "current_score": 0,
+            "id": "624d11eb000000000101e223",
+            "link": "xhsdiscover://rn/sns-discover/topic/normal?id=624d11ebc9ac6000015f0cf2&page_source=note_feed.click_new_big&topic_name=%E5%A4%A7%E6%A8%A1%E5%9E%8B&source=normal&pre_source=explore",
+            "name": "大模型",
+            "record_count": 0,
+            "record_emoji": "",
+            "record_unit": "",
+            "tag_hint": "",
+            "type": "topic"
+          },
+          {
+            "bizId": "",
+            "current_score": 0,
+            "id": "68d7d4640000000012018ecb",
+            "link": "xhsdiscover://rn/sns-discover/topic/immersive?id=68d7d4640126000000000001&page_source=note_feed.click_new_big&topic_name=%E5%B0%8F%E7%BA%A2%E4%B9%A6%E7%A7%91%E6%8A%80AMA&source=normal&pre_source=explore",
+            "name": "小红书科技AMA",
+            "record_count": 0,
+            "record_emoji": "",
+            "record_unit": "",
+            "tag_hint": "",
+            "type": "topic"
+          }
+        ],
+        "id": "69cbc340000000001a02329e",
+        "images_list": [
+          {
+            "fileid": "1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988",
+            "height": 1496,
+            "index": 0,
+            "latitude": 0,
+            "longitude": 0,
+            "need_load_original_image": false,
+            "original": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988",
+            "scale_to_large": 0,
+            "trace_id": "1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988",
+            "url": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/1080/format/webp",
+            "url_size_large": "",
+            "width": 1448
+          },
+          {
+            "fileid": "1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0",
+            "height": 1796,
+            "index": 0,
+            "latitude": 0,
+            "longitude": 0,
+            "need_load_original_image": false,
+            "original": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0",
+            "scale_to_large": 0,
+            "trace_id": "1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0",
+            "url": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0?imageView2/2/h/1080/format/webp",
+            "url_size_large": "",
+            "width": 2536
+          },
+          {
+            "fileid": "1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8",
+            "height": 1192,
+            "index": 0,
+            "latitude": 0,
+            "longitude": 0,
+            "need_load_original_image": false,
+            "original": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8",
+            "scale_to_large": 0,
+            "trace_id": "1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8",
+            "url": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8?imageView2/2/h/1080/format/webp",
+            "url_size_large": "",
+            "width": 2064
+          }
+        ],
+        "ip_location": "浙江",
+        "last_update_time": 0,
+        "liked": false,
+        "liked_count": 571,
+        "long_press_share_info": {
+          "block_private_msg": false,
+          "content": "",
+          "function_entries": [
+            {
+              "type": "image_download"
+            }
+          ],
+          "guide_audited": false,
+          "is_star": false,
+          "show_wechat_tag": false,
+          "title": ""
+        },
+        "media_save_config": {
+          "disable_save": false,
+          "disable_watermark": false,
+          "disable_weibo_cover": false
+        },
+        "model_type": "note",
+        "need_next_step": false,
+        "need_product_review": false,
+        "privacy": {
+          "nick_names": "",
+          "show_tips": false,
+          "type": 0
+        },
+        "qq_mini_program_info": {
+          "desc": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像",
+          "path": "pages/main/note/index?xsec_source=app_share&id=69cbc340000000001a02329e&type=normal&xsec_token=CBYI2W0yIdobdGwmBUQdqh9lo0Llliz6O4v3rGlPuyqIE=",
+          "share_title": "@PaperBox 发了一篇超赞的笔记，快点来看！",
+          "thumb": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/540/format/jpg/q/75",
+          "title": "@PaperBox 发了一篇超赞的笔记，快点来看！",
+          "user_name": "gh_66c53d495417",
+          "webpage_url": "https://www.xiaohongshu.com/discovery/item/69cbc340000000001a02329e?xsec_source=app_share&xsec_token=CBYI2W0yIdobdGwmBUQdqh9lo0Llliz6O4v3rGlPuyqIE="
+        },
+        "seeded": false,
+        "seeded_count": 0,
+        "share_code_flag": 0,
+        "share_info": {
+          "block_private_msg": false,
+          "content": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像",
+          "function_entries": [
+            {
+              "type": "image_download_all"
+            },
+            {
+              "type": "generate_image"
+            },
+            {
+              "type": "copy_link"
+            },
+            {
+              "type": "heat_for_author"
+            },
+            {
+              "type": "dislike"
+            },
+            {
+              "type": "report"
+            }
+          ],
+          "guide_audited": true,
+          "image": "https://sns-na-i2.xhscdn.com/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988?imageView2/2/w/360/format/jpg/q/75",
+          "is_star": false,
+          "link": "https://www.xiaohongshu.com/discovery/item/69cbc340000000001a02329e?app_platform=android&ignoreEngage=true&app_version=9.25.3&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBYI2W0yIdobdGwmBUQdqh9lo0Llliz6O4v3rGlPuyqIE=&author_share=1",
+          "show_wechat_tag": false,
+          "title": "nanorllm开源 agentic RL 最核心的训练闭环"
+        },
+        "shared_count": 202,
+        "source_item": true,
+        "source_note": true,
+        "sticky": false,
+        "time": 1774961472,
+        "title": "nanorllm开源 agentic RL 最核心的训练闭环",
+        "topics": [
+          {
+            "activity_online": false,
+            "business_type": 0,
+            "discuss_num": 0,
+            "id": "629a03d500000000010055c7",
+            "image": "http://ci.xiaohongshu.com/fd75707a-37f8-45ad-b7a7-0feaf36e9cad@r_120w_120h.jpg",
+            "link": "xhsdiscover://topic/v2/629a03d58d87280001904afc?page_source=note_feed.click_new_big",
+            "name": "AGENT",
+            "style": 0
+          }
+        ],
+        "track_id": "",
+        "type": "normal",
+        "user": {
+          "followed": false,
+          "id": "5b6672072253240001fdb2c2",
+          "image": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mpff0866g6g4a9g0ip0fcm22ifd9n8?imageView2/2/w/120/format/jpg",
+          "image_size_large": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mpff0866g6g4a9g0ip0fcm22ifd9n8?imageView2/2/w/540/format/jpg",
+          "level": {
+            "image": ""
+          },
+          "name": "PaperBox",
+          "nickname": "PaperBox",
+          "red_id": "800974302",
+          "red_official_verified": false,
+          "red_official_verify_type": 0,
+          "show_red_official_verify_icon": false,
+          "track_duration": 0,
+          "userid": "5b6672072253240001fdb2c2"
+        },
+        "view_count": 0,
+        "widgets_context": "{\"flags\":{},\"author_id\":\"5b6672072253240001fdb2c2\",\"author_name\":\"PaperBox\",\"q_task_id\":\"\",\"video_rec_bar_info\":\"\"}",
+        "widgets_groups": [
+          [
+            "guos_test",
+            "note_next_step",
+            "second_jump_bar",
+            "cooperate_binds",
+            "note_collection",
+            "rec_next_infos",
+            "image_stickers",
+            "image_filters",
+            "product_review",
+            "related_search",
+            "cooperate_comment_component",
+            "image_goods_cards",
+            "ads_goods_cards",
+            "ads_comment_component",
+            "goods_card_v2",
+            "image_template",
+            "buyable_goods_card_v2",
+            "ads_engage_bar",
+            "challenge_card",
+            "cooperate_engage_bar",
+            "guide_post",
+            "pgy_comment_component",
+            "pgy_engage_bar",
+            "bar_below_image",
+            "aigc_collection",
+            "co_produce",
+            "widgets_ndb",
+            "next_note_guide",
+            "pgy_bbc_exp",
+            "async_group",
+            "super_activity",
+            "widgets_enhance",
+            "music_player",
+            "soundtrack_player"
+          ],
+          [
+            "guos_test",
+            "vote_stickers",
+            "bullet_comment_lead",
+            "note_search_box",
+            "interact_pk",
+            "interact_vote",
+            "guide_heuristic",
+            "share_to_msg",
+            "follow_guide",
+            "note_share_prompt_v1",
+            "sync_group",
+            "group_share",
+            "share_guide_bubble",
+            "widgets_share",
+            "guide_navigator"
+          ]
+        ]
+      }
+    ],
+    "track_id": "",
+    "user": {
+      "followed": false,
+      "id": "5b6672072253240001fdb2c2",
+      "image": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mpff0866g6g4a9g0ip0fcm22ifd9n8?imageView2/2/w/120/format/jpg",
+      "image_size_large": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mpff0866g6g4a9g0ip0fcm22ifd9n8?imageView2/2/w/540/format/jpg",
+      "level": {
+        "image": ""
+      },
+      "name": "PaperBox",
+      "nickname": "PaperBox",
+      "red_id": "800974302",
+      "red_official_verified": false,
+      "red_official_verify_type": 0,
+      "show_red_official_verify_icon": false,
+      "track_duration": 0,
+      "userid": "5b6672072253240001fdb2c2"
+    }
+  }
+}

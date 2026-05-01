@@ -1,0 +1,163 @@
+{
+  "code": 200,
+  "request_id": "5d7bf66f-f80a-48c4-80d4-56494a4bf3d3",
+  "message": "Request successful. This request will incur a charge.",
+  "message_zh": "请求成功，本次请求将被计费。",
+  "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+  "time": "2026-04-30 07:46:53",
+  "time_stamp": 1777560413,
+  "time_zone": "America/Los_Angeles",
+  "docs": "https://api.tikhub.io/#/Xiaohongshu-Web-V3-API/fetch_note_detail_api_v1_xiaohongshu_web_v3_fetch_note_detail_get",
+  "cache_message": "This request will be cached. You can access the cached result directly using the URL below, valid for 24 hours. Accessing the cache will not incur additional charges.",
+  "cache_message_zh": "本次请求将被缓存，你可以使用下面的 URL 直接访问缓存结果，有效期为 24 小时，访问缓存不会产生额外费用。",
+  "cache_url": "https://cache.tikhub.io/api/v1/cache/public/5d7bf66f-f80a-48c4-80d4-56494a4bf3d3?sign=b1d3fa2808a765bbbc24a160bef3f4468d5a4e77db278d6dbc031fa1047c3b8a",
+  "router": "/api/v1/xiaohongshu/web_v3/fetch_note_detail",
+  "params": {
+    "note_id": "69cbc340000000001a02329e",
+    "xsec_token": "CBlSyM4JoExXuEGqx9DF1it0-VSjFB5iy7J-bcBW5D4gI="
+  },
+  "data": {
+    "ok": true,
+    "data": {
+      "cursorScore": "",
+      "items": [
+        {
+          "id": "69cbc340000000001a02329e",
+          "modelType": "note",
+          "noteCard": {
+            "shareInfo": {
+              "unShare": false
+            },
+            "type": "normal",
+            "title": "nanorllm开源 agentic RL 最核心的训练闭环",
+            "desc": "最近写了一个 nanorllm，核心想法不是复现完整 rllm 工程，而是想把 agentic RL 的主链路走一遍。像 multi-turn rollout、trajectory collection、grpo算法、trainer 这些环节，很多时候不是概念难，而是被埋在太重的系统里[失望R]\n\t\n[捂脸R]算是啃了一块硬骨头了吧，花了三周的时间，infra 太硬核了\n\t\nagentic rl 看起来很难，实际上确实难，但是只要有耐心 就不难[doge]\n\t\n项目在github已开源，下一步更新计划：\n[一R]off-policy\n[二R]使用工具的 env\n\t\n欢迎大佬们交流合作！\n\t\n#AGENT[话题]# #AgenticRL[话题]# #强化学习[话题]# #GRPO[话题]# #开源项目[话题]# #大模型[话题]# #小红书科技AMA[话题]#",
+            "interactInfo": {
+              "collectedCount": "918",
+              "commentCount": "51",
+              "shareCount": "202",
+              "followed": false,
+              "relation": "none",
+              "liked": false,
+              "likedCount": "571",
+              "collected": false
+            },
+            "time": 1774961472000,
+            "lastUpdateTime": 1774961472000,
+            "noteId": "69cbc340000000001a02329e",
+            "user": {
+              "userId": "5b6672072253240001fdb2c2",
+              "nickname": "PaperBox",
+              "avatar": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mpff0866g6g4a9g0ip0fcm22ifd9n8",
+              "xsecToken": "ABeLD50VrhHPGx1_WDzCpiD9TT-Q_0uiUkVaauFbC5w8Q="
+            },
+            "imageList": [
+              {
+                "width": 1448,
+                "infoList": [
+                  {
+                    "imageScene": "WB_PRV",
+                    "url": "http://sns-web-i10.rednotecdn.com/202604302246/bd52649d1e6cff87657ac23cb2a3b887/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988!nd_prv_wlteh_webp_3?src=A"
+                  },
+                  {
+                    "imageScene": "WB_DFT",
+                    "url": "http://sns-web-i10.rednotecdn.com/202604302246/3100a038085513809cc25e68795bc428/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988!nd_dft_wlteh_webp_3?src=A"
+                  }
+                ],
+                "urlPre": "http://sns-web-i10.rednotecdn.com/202604302246/bd52649d1e6cff87657ac23cb2a3b887/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988!nd_prv_wlteh_webp_3?src=A",
+                "livePhoto": false,
+                "height": 1496,
+                "url": "",
+                "traceId": "",
+                "urlDefault": "http://sns-web-i10.rednotecdn.com/202604302246/3100a038085513809cc25e68795bc428/1040g2sg31uclec9r2ak04a9g0ip0fcm2m0ur988!nd_dft_wlteh_webp_3?src=A",
+                "stream": {},
+                "fileId": ""
+              },
+              {
+                "urlDefault": "http://sns-web-i10.rednotecdn.com/202604302246/a4d7250b34db3603c08f86c26b437424/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0!nd_dft_wgth_webp_3?src=A",
+                "livePhoto": false,
+                "fileId": "",
+                "width": 2536,
+                "url": "",
+                "urlPre": "http://sns-web-i10.rednotecdn.com/202604302246/1bd4e8de46be1fbd9eec46253de95600/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0!nd_prv_wgth_webp_3?src=A",
+                "stream": {},
+                "height": 1796,
+                "traceId": "",
+                "infoList": [
+                  {
+                    "imageScene": "WB_PRV",
+                    "url": "http://sns-web-i10.rednotecdn.com/202604302246/1bd4e8de46be1fbd9eec46253de95600/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0!nd_prv_wgth_webp_3?src=A"
+                  },
+                  {
+                    "imageScene": "WB_DFT",
+                    "url": "http://sns-web-i10.rednotecdn.com/202604302246/a4d7250b34db3603c08f86c26b437424/1040g2sg31uclec9r2aj04a9g0ip0fcm29ivqoc0!nd_dft_wgth_webp_3?src=A"
+                  }
+                ]
+              },
+              {
+                "width": 2064,
+                "traceId": "",
+                "fileId": "",
+                "height": 1192,
+                "url": "",
+                "infoList": [
+                  {
+                    "imageScene": "WB_PRV",
+                    "url": "http://sns-web-i10.rednotecdn.com/202604302246/da52e182bfc94fbdbea0aa9c9628e535/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8!nd_prv_wgth_webp_3?src=A"
+                  },
+                  {
+                    "url": "http://sns-web-i10.rednotecdn.com/202604302246/c7e42516151c52b156ac3f9533e76eb6/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8!nd_dft_wgth_webp_3?src=A",
+                    "imageScene": "WB_DFT"
+                  }
+                ],
+                "urlPre": "http://sns-web-i10.rednotecdn.com/202604302246/da52e182bfc94fbdbea0aa9c9628e535/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8!nd_prv_wgth_webp_3?src=A",
+                "urlDefault": "http://sns-web-i10.rednotecdn.com/202604302246/c7e42516151c52b156ac3f9533e76eb6/1040g2sg31uclec9r2aig4a9g0ip0fcm2d77trh8!nd_dft_wgth_webp_3?src=A",
+                "stream": {},
+                "livePhoto": false
+              }
+            ],
+            "tagList": [
+              {
+                "id": "629a03d500000000010055c7",
+                "name": "AGENT",
+                "type": "topic"
+              },
+              {
+                "id": "68ad8df3000000000600e306",
+                "name": "AgenticRL",
+                "type": "topic"
+              },
+              {
+                "id": "610dfdd40000000001006323",
+                "name": "强化学习",
+                "type": "topic"
+              },
+              {
+                "id": "65c202d80000000013017081",
+                "name": "GRPO",
+                "type": "topic"
+              },
+              {
+                "name": "开源项目",
+                "type": "topic",
+                "id": "601b709500000000010080ca"
+              },
+              {
+                "name": "大模型",
+                "type": "topic",
+                "id": "624d11eb000000000101e223"
+              },
+              {
+                "name": "小红书科技AMA",
+                "type": "topic",
+                "id": "68d7d4640000000012018ecb"
+              }
+            ],
+            "atUserList": []
+          }
+        }
+      ],
+      "currentTime": 1777560413704
+    },
+    "_slot_ready": true
+  }
+}

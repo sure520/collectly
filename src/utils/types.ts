@@ -28,6 +28,17 @@ export interface SearchQuery {
   end_date?: string;
   learning_status?: string;
   use_semantic?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+// 分页搜索响应类型
+export interface PaginatedSearchResult {
+  items: SearchResult[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }
 
 // 搜索结果类型

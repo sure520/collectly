@@ -1,10 +1,13 @@
 import sqlite3
 import hashlib
 import json
+import logging
 from pathlib import Path
 from app.models.schemas import ContentResponse
 from app.services.vector_service import VectorService
 from typing import Optional
+
+logger = logging.getLogger("vector_service")
 
 # 项目根目录
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -14,6 +17,77 @@ class ContentManager:
         self.db_path = str(PROJECT_ROOT / "knowledge.db")
         self._init_db()
         self.vector_service = VectorService()
+        if self.vector_service.needs_rebuild:
+            self._auto_rebuild_vectors()
+    
+    def _auto_rebuild_vectors(self):
+        """当向量集合因维度变化被重建时，自动重新嵌入所有已有内容"""
+        logger.info("检测到向量集合维度变更，开始自动重建向量索引...")
+        try:
+            all_content = self.get_all_sync()
+            if not all_content:
+                logger.info("没有已有内容需要重新嵌入")
+                return
+
+            success_count = 0
+            for content in all_content:
+                content_obj = ContentResponse(
+                    title=content["title"],
+                    content=content["content"],
+                    author=content["author"],
+                    update=content["update"],
+                    create_time=content["create_time"],
+                    url=content["url"],
+                    source=content["source"],
+                    tags=content["tags"],
+                    knowledge_points=content["knowledge_points"],
+                    summary=content["summary"]
+                )
+                embedding_text = self._build_embedding_text(content_obj)
+                metadata = {
+                    "source": content["source"],
+                    "title": content["title"],
+                    "tags": json.dumps(content["tags"]),
+                    "knowledge_points": json.dumps(content["knowledge_points"])
+                }
+                if self.vector_service.add_embedding(
+                    content_id=content["id"],
+                    text=embedding_text,
+                    metadata=metadata
+                ):
+                    success_count += 1
+
+            logger.info(
+                f"向量索引自动重建完成: {success_count}/{len(all_content)} 条成功"
+            )
+        except Exception as e:
+            logger.error(f"自动重建向量索引失败: {e}")
+    
+    def get_all_sync(self) -> list:
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT id, title, content, author, update_date, create_date, url, source, 
+                       tags, knowledge_points, summary
+                FROM content
+            ''')
+            rows = cursor.fetchall()
+            results = []
+            for row in rows:
+                results.append({
+                    "id": row[0],
+                    "title": row[1],
+                    "content": row[2],
+                    "author": row[3],
+                    "update": row[4],
+                    "create_time": row[5],
+                    "url": row[6],
+                    "source": row[7],
+                    "tags": json.loads(row[8]) if row[8] else [],
+                    "knowledge_points": json.loads(row[9]) if row[9] else [],
+                    "summary": row[10]
+                })
+            return results
     
     def _init_db(self):
         """初始化数据库"""
@@ -215,14 +289,17 @@ class ContentManager:
     
     async def delete(self, content_id: str) -> bool:
         """删除内容"""
-        self.vector_service.delete_embedding(content_id)
-        
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('DELETE FROM learning_status WHERE content_id = ?', (content_id,))
             cursor.execute('DELETE FROM content WHERE id = ?', (content_id,))
             conn.commit()
-            return cursor.rowcount > 0
+            deleted = cursor.rowcount > 0
+            
+            if deleted:
+                self.vector_service.delete_embedding(content_id)
+            
+            return deleted
     
     async def get_all(self) -> list:
         """获取所有内容"""

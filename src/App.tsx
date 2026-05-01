@@ -10,12 +10,18 @@ import FilterPanel from './components/FilterPanel';
 import { DetailModal } from './components/DetailModal';
 import { Stats } from './components/Stats';
 import { Settings } from './components/Settings';
+import { Pagination } from './components/Pagination';
 import { useKnowledge } from './hooks/useKnowledge';
 import type { KnowledgeItem, SearchFilters, LearningStatus } from './types';
 
 function AppContent() {
   const navigate = useNavigate();
-  const { items, stats, loading, parseAndAddItem, semanticSearch, updateItem, deleteItem, fetchItems } = useKnowledge();
+  const {
+    items, stats, loading, parseError,
+    page, pageSize, total, totalPages,
+    parseAndAddItem, semanticSearch, updateItem, deleteItem,
+    fetchItems, goToPage, changePageSize,
+  } = useKnowledge();
   const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
@@ -133,6 +139,14 @@ function AppContent() {
                   />
                 ))}
               </div>
+              <Pagination
+                page={page}
+                pageSize={pageSize}
+                total={total}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+                onPageSizeChange={changePageSize}
+              />
             </div>
           }
         />
@@ -144,13 +158,19 @@ function AppContent() {
               <FilterPanel filters={filters} onChange={setFilters} />
               {isSemanticSearch && searchQuery && (
                 <div className="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
-                  语义检索模式：共找到 {searchResults.length} 条相关结果
+                  语义检索模式：共找到 {total} 条相关结果
                 </div>
               )}
               <KnowledgeList
                 items={displayItems}
                 onItemClick={handleItemClick}
                 onStatusChange={handleUpdateStatus}
+                page={page}
+                pageSize={pageSize}
+                total={total}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+                onPageSizeChange={changePageSize}
               />
             </div>
           }

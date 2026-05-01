@@ -25,17 +25,9 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [error, setError] = useState('');
   const [hasParsed, setHasParsed] = useState(false);
+  const [isCleaning, setIsCleaning] = useState(false);
 
-  const validateUrl = useCallback((url: string): boolean => {
-    try {
-      new URL(url.trim());
-      return true;
-    } catch {
-      return false;
-    }
-  }, []);
-
-  const handleAddLinks = useCallback(() => {
+  const handleAddLinks = useCallback(async () => {
     setError('');
     const urls = inputValue
       .replace(/\r\n/g, '\n')
@@ -53,21 +45,42 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
       return;
     }
 
-    const newLinks: LinkItem[] = urls.map(url => {
-      const trimmed = url.trim();
-      const isValid = validateUrl(trimmed);
-      const platform = isValid ? detectPlatform(trimmed) : null;
-      return { url: trimmed, platform, isValid, status: 'pending' };
-    });
+    setIsCleaning(true);
 
-    const invalidCount = newLinks.filter(l => !l.isValid).length;
-    if (invalidCount > 0) {
-      setError(`检测到 ${invalidCount} 个无效链接`);
+    try {
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
+      const response = await fetch(`${API_BASE_URL}/clean-urls`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw_texts: urls }),
+      });
+
+      if (!response.ok) {
+        throw new Error('链接清理失败');
+      }
+
+      const cleanedResults = await response.json();
+
+      const newLinks: LinkItem[] = cleanedResults.map((result: { cleaned_url: string; is_valid: boolean }) => {
+        const trimmed = result.cleaned_url.trim();
+        const isValid = result.is_valid;
+        const platform = isValid ? detectPlatform(trimmed) : null;
+        return { url: trimmed, platform, isValid, status: 'pending' };
+      });
+
+      const invalidCount = newLinks.filter(l => !l.isValid).length;
+      if (invalidCount > 0) {
+        setError(`检测到 ${invalidCount} 个无效链接`);
+      }
+
+      setLinks(prev => [...prev, ...newLinks].slice(0, 10));
+      setInputValue('');
+    } catch (err) {
+      setError('链接清理失败，请重试');
+    } finally {
+      setIsCleaning(false);
     }
-
-    setLinks(prev => [...prev, ...newLinks].slice(0, 10));
-    setInputValue('');
-  }, [inputValue, validateUrl]);
+  }, [inputValue]);
 
   const removeLink = useCallback((index: number) => {
     setLinks(prev => prev.filter((_, i) => i !== index));
@@ -119,13 +132,13 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
   }, [hasParsed, isParsing, links.length, clearAll, onParsingComplete]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-3 sm:p-6">
+    <div className="w-full max-w-2xl mx-auto p-2 sm:p-3">
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
             <Link2 className="w-5 h-5 text-white" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="text-lg font-semibold text-gray-900">添加收藏链接</h2>
             <p className="text-sm text-gray-500">支持微信公众号、知乎、CSDN、B站、抖音、小红书</p>
           </div>
@@ -143,11 +156,11 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
             <span className="text-xs text-gray-400">已添加 {links.length}/10 条</span>
             <button
               onClick={handleAddLinks}
-              disabled={!inputValue.trim() || isParsing || links.length >= 10}
+              disabled={!inputValue.trim() || isParsing || links.length >= 10 || isCleaning}
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
             >
-              <Plus className="w-4 h-4" />
-              添加
+              {isCleaning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {isCleaning ? '清理中...' : '添加'}
             </button>
           </div>
         </div>
@@ -157,7 +170,7 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
             {links.map((link, index) => (
               <div
                 key={index}
-                className={`flex items-center gap-3 p-3 rounded-xl border ${
+                className={`flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl border ${
                   link.status === 'error' ? 'bg-red-50 border-red-200' :
                   link.status === 'success' ? 'bg-green-50 border-green-200' :
                   link.status === 'parsing' ? 'bg-blue-50 border-blue-200' :
@@ -166,18 +179,19 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
                 }`}
               >
                 <i
-                  className={`${link.platform ? getPlatformIcon(link.platform) : 'fa-solid fa-link'} text-lg`}
+                  className={`${link.platform ? getPlatformIcon(link.platform) : 'fa-solid fa-link'} text-base sm:text-lg flex-shrink-0 mt-0.5`}
                   style={{ color: link.platform ? getPlatformColor(link.platform) : '#9CA3AF' }}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                     {link.platform ? getPlatformName(link.platform) : '未知平台'}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">{link.url}</p>
+                  <p className="text-xs text-gray-500 break-all leading-tight">{link.url}</p>
                   {link.errorMsg && (
                     <p className="text-xs text-red-500 mt-1">{link.errorMsg}</p>
                   )}
                 </div>
+                <div className="flex flex-shrink-0 gap-1">
                 {link.status === 'parsing' ? (
                   <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
                 ) : link.status === 'success' ? (
@@ -201,6 +215,7 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
                 >
                   <X className="w-4 h-4 text-gray-400" />
                 </button>
+                </div>
               </div>
             ))}
           </div>
@@ -229,7 +244,7 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
           </div>
         )}
 
-        <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
           {links.length > 0 && (
             <button
               onClick={clearAll}

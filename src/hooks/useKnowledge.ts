@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import * as api from '../utils/api';
 import type { ContentResponse, SearchQuery as ApiSearchQuery } from '../utils/types';
 import type { KnowledgeItem, SearchFilters, UserStats, Platform, Domain, Difficulty, ContentType, LearningStatus } from '../types';
@@ -11,6 +11,15 @@ export function useKnowledge(userId: string | undefined) {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const lastFiltersRef = useRef<SearchFilters | undefined>(undefined);
+  const lastQueryRef = useRef<string | undefined>(undefined);
+  const lastSemanticRef = useRef<{ query: string; filters?: SearchFilters } | null>(null);
 
   const domainMap: Record<string, Domain> = {
     '大模型': 'llm',
@@ -54,7 +63,38 @@ export function useKnowledge(userId: string | undefined) {
     return reverseMap[domain] || '';
   };
 
-  const fetchItems = useCallback(async (filters?: SearchFilters, searchQuery?: string) => {
+  const formatItems = (results: any[]): KnowledgeItem[] => {
+    return results.map(item => ({
+      id: item.content_id,
+      title: item.title,
+      content: '',
+      short_summary: item.summary,
+      long_summary: item.summary,
+      author: item.author,
+      platform: (platformMap[item.source] || 'zhihu') as Platform,
+      status: (item.learning_status === '未读' ? 'unread' : item.learning_status === '已读' ? 'read' : item.learning_status === '重点' ? 'important' : 'review') as LearningStatus,
+      domains: item.tags.filter((tag: string) => domainMap[tag]).map((tag: string) => domainMap[tag]),
+      difficulty: item.tags.find((tag: string) => difficultyMap[tag]) ? difficultyMap[item.tags.find((tag: string) => difficultyMap[tag])!] : 'beginner',
+      content_type: item.tags.find((tag: string) => contentTypeMap[tag]) ? contentTypeMap[item.tags.find((tag: string) => contentTypeMap[tag])!] : 'tutorial',
+      key_points: item.knowledge_points,
+      tags: item.tags,
+      url: item.url || '',
+      publish_time: item.update,
+      created_at: item.create_time,
+      updated_at: item.update,
+      is_deleted: false,
+      user_id: userId || '',
+    }));
+  };
+
+  const fetchItems = useCallback(async (filters?: SearchFilters, searchQuery?: string, currentPage?: number, currentPageSize?: number) => {
+    const p = currentPage ?? page;
+    const ps = currentPageSize ?? pageSize;
+
+    lastFiltersRef.current = filters;
+    lastQueryRef.current = searchQuery;
+    lastSemanticRef.current = null;
+
     setLoading(true);
 
     try {
@@ -67,39 +107,22 @@ export function useKnowledge(userId: string | undefined) {
         start_date: filters?.startDate,
         end_date: filters?.endDate,
         learning_status: filters?.status?.[0],
+        page: p,
+        page_size: ps,
       };
 
-      const results = await api.search(apiQuery);
-      
-      const formattedItems: KnowledgeItem[] = results.map(item => ({
-        id: item.content_id,
-        title: item.title,
-        content: '',
-        short_summary: item.summary,
-        long_summary: item.summary,
-        author: item.author,
-        platform: (platformMap[item.source] || 'zhihu') as Platform,
-        status: (item.learning_status === '未读' ? 'unread' : item.learning_status === '已读' ? 'read' : item.learning_status === '重点' ? 'important' : 'review') as LearningStatus,
-        domains: item.tags.filter(tag => domainMap[tag]).map(tag => domainMap[tag]),
-        difficulty: item.tags.find(tag => difficultyMap[tag]) ? difficultyMap[item.tags.find(tag => difficultyMap[tag])!] : 'beginner',
-        content_type: item.tags.find(tag => contentTypeMap[tag]) ? contentTypeMap[item.tags.find(tag => contentTypeMap[tag])!] : 'tutorial',
-        key_points: item.knowledge_points,
-        tags: item.tags,
-        url: item.url || '',
-        publish_time: item.update,
-        created_at: item.create_time,
-        updated_at: item.update,
-        is_deleted: false,
-        user_id: userId || '',
-      }));
+      const result = await api.search(apiQuery);
 
-      setItems(formattedItems);
+      setItems(formatItems(result.items));
+      setTotal(result.total);
+      setTotalPages(result.total_pages);
+      setPage(result.page);
     } catch (error) {
       console.error('Error fetching items:', error);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, page, pageSize]);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -162,6 +185,7 @@ export function useKnowledge(userId: string | undefined) {
       };
 
       setItems(prev => [newItem, ...prev]);
+      setTotal(prev => prev + 1);
       fetchStats();
 
       return { data: newItem, error: null };
@@ -172,7 +196,14 @@ export function useKnowledge(userId: string | undefined) {
     }
   }, [userId, fetchStats]);
 
-  const semanticSearch = useCallback(async (query: string, filters?: SearchFilters) => {
+  const semanticSearch = useCallback(async (query: string, filters?: SearchFilters, currentPage?: number, currentPageSize?: number) => {
+    const p = currentPage ?? 1;
+    const ps = currentPageSize ?? pageSize;
+
+    lastSemanticRef.current = { query, filters };
+    lastFiltersRef.current = undefined;
+    lastQueryRef.current = undefined;
+
     try {
       const apiQuery: ApiSearchQuery = {
         text: query,
@@ -183,38 +214,44 @@ export function useKnowledge(userId: string | undefined) {
         start_date: filters?.startDate,
         end_date: filters?.endDate,
         learning_status: filters?.status?.[0],
+        page: p,
+        page_size: ps,
       };
 
-      const results = await api.search(apiQuery);
-      
-      const formattedItems: KnowledgeItem[] = results.map(item => ({
-        id: item.content_id,
-        title: item.title,
-        content: '',
-        short_summary: item.summary,
-        long_summary: item.summary,
-        author: item.author,
-        platform: (platformMap[item.source] || 'zhihu') as Platform,
-        status: (item.learning_status === '未读' ? 'unread' : item.learning_status === '已读' ? 'read' : item.learning_status === '重点' ? 'important' : 'review') as LearningStatus,
-        domains: item.tags.filter(tag => domainMap[tag]).map(tag => domainMap[tag]),
-        difficulty: item.tags.find(tag => difficultyMap[tag]) ? difficultyMap[item.tags.find(tag => difficultyMap[tag])!] : 'beginner',
-        content_type: item.tags.find(tag => contentTypeMap[tag]) ? contentTypeMap[item.tags.find(tag => contentTypeMap[tag])!] : 'tutorial',
-        key_points: item.knowledge_points,
-        tags: item.tags,
-        url: item.url || '',
-        publish_time: item.update,
-        created_at: item.create_time,
-        updated_at: item.update,
-        is_deleted: false,
-        user_id: userId || '',
-      }));
+      const result = await api.search(apiQuery);
 
-      return { data: formattedItems, error: null };
+      setItems(formatItems(result.items));
+      setTotal(result.total);
+      setTotalPages(result.total_pages);
+      setPage(result.page);
+
+      return { data: formatItems(result.items), error: null };
     } catch (error) {
       console.error('Error in semantic search:', error);
       return { data: [], error };
     }
-  }, [userId]);
+  }, [userId, pageSize]);
+
+  const goToPage = useCallback((newPage: number) => {
+    setPage(newPage);
+    if (lastSemanticRef.current) {
+      const { query, filters } = lastSemanticRef.current;
+      semanticSearch(query, filters, newPage, pageSize);
+    } else {
+      fetchItems(lastFiltersRef.current, lastQueryRef.current, newPage, pageSize);
+    }
+  }, [fetchItems, semanticSearch, pageSize]);
+
+  const changePageSize = useCallback((newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1);
+    if (lastSemanticRef.current) {
+      const { query, filters } = lastSemanticRef.current;
+      semanticSearch(query, filters, 1, newPageSize);
+    } else {
+      fetchItems(lastFiltersRef.current, lastQueryRef.current, 1, newPageSize);
+    }
+  }, [fetchItems, semanticSearch]);
 
   const updateItem = useCallback(async (id: string, updates: Partial<KnowledgeItem>) => {
     try {
@@ -252,7 +289,9 @@ export function useKnowledge(userId: string | undefined) {
 
   const deleteItem = useCallback(async (id: string) => {
     try {
+      await api.deleteContent(id);
       setItems(prev => prev.filter(item => item.id !== id));
+      setTotal(prev => prev - 1);
       fetchStats();
       return { error: null };
     } catch (error) {
@@ -264,18 +303,24 @@ export function useKnowledge(userId: string | undefined) {
   useEffect(() => {
     fetchItems();
     fetchStats();
-  }, [fetchItems, fetchStats]);
+  }, []);
 
   return {
     items,
     stats,
     loading,
     parseError,
+    page,
+    pageSize,
+    total,
+    totalPages,
     fetchItems,
     fetchStats,
     parseAndAddItem,
     semanticSearch,
     updateItem,
     deleteItem,
+    goToPage,
+    changePageSize,
   };
 }
