@@ -69,8 +69,8 @@ services:
 ```
 
 部署脚本自动完成：
-- 环境检查（Python、Node.js）
-- 虚拟环境创建
+- 环境检查（uv、Node.js）
+- 虚拟环境创建 & 依赖同步（通过 uv）
 - 依赖安装（前后端）
 - 环境变量配置
 - 后端服务启动
@@ -79,12 +79,28 @@ services:
 
 ## 手动部署
 
+前置要求：安装 [uv](https://docs.astral.sh/uv/)（Python 包管理器）
+
+```bash
+# Windows 安装 uv
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Linux/macOS 安装 uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
 ```bash
 # 后端
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uv sync                                        # 同步虚拟环境和依赖
+
+# 使用启动脚本
+./start.sh          # Linux/macOS
+# 或
+.\start.ps1         # Windows PowerShell
+# 或
+.\start.bat         # Windows CMD
+# 或手动启动
+uv run uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 
 # 前端
 npm install

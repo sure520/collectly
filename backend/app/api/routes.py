@@ -3,16 +3,16 @@ from app.services.platform_parser import PlatformParser, process_url
 from app.services.content_manager import ContentManager
 from app.services.search_engine import SearchEngine
 from app.services.learning_manager import LearningManager
+from app.utils.config import get_settings, update_settings
 from app.models.schemas import (
     LinkInput, ContentResponse, SearchQuery, SearchResult,
     PaginatedSearchResult, LearningStatusUpdate, TagUpdate, NoteUpdate
 )
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 router = APIRouter()
 
-# 初始化服务
 platform_parser = PlatformParser()
 content_manager = ContentManager()
 search_engine = SearchEngine()
@@ -248,3 +248,50 @@ async def rebuild_all_vectors():
         return {"message": f"向量索引重建完成", "success_count": success_count, "total": len(all_content)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class AppSettings(BaseModel):
+    tikhub_api_key: str = ""
+    dashscope_api_key: str = ""
+    llm_model_name: str = ""
+    asr_model_name: str = ""
+    vision_model_name: str = ""
+    embedding_model: str = ""
+
+
+@router.get("/settings", response_model=AppSettings)
+async def get_app_settings():
+    cfg = get_settings()
+    return AppSettings(
+        tikhub_api_key=cfg.TIKHUB_API_KEY,
+        dashscope_api_key=cfg.DASHSCOPE_API_KEY,
+        llm_model_name=cfg.LLM_MODEL_NAME or "qwen3.5-plus",
+        asr_model_name=cfg.ASR_MODEL_NAME or "qwen3-asr-flash",
+        vision_model_name=cfg.VISION_MODEL_NAME or "qwen3-vl-flash",
+        embedding_model=cfg.EMBEDDING_MODEL or "text-embedding-v4",
+    )
+
+
+@router.post("/settings", response_model=AppSettings)
+async def save_app_settings(body: AppSettings):
+    try:
+        mapping = {
+            "TIKHUB_API_KEY": body.tikhub_api_key,
+            "DASHSCOPE_API_KEY": body.dashscope_api_key,
+            "LLM_MODEL_NAME": body.llm_model_name,
+            "ASR_MODEL_NAME": body.asr_model_name,
+            "VISION_MODEL_NAME": body.vision_model_name,
+            "EMBEDDING_MODEL": body.embedding_model,
+        }
+        update_settings(mapping)
+        cfg = get_settings()
+        return AppSettings(
+            tikhub_api_key=cfg.TIKHUB_API_KEY,
+            dashscope_api_key=cfg.DASHSCOPE_API_KEY,
+            llm_model_name=cfg.LLM_MODEL_NAME or "qwen3.5-plus",
+            asr_model_name=cfg.ASR_MODEL_NAME or "qwen3-asr-flash",
+            vision_model_name=cfg.VISION_MODEL_NAME or "qwen3-vl-flash",
+            embedding_model=cfg.EMBEDDING_MODEL or "text-embedding-v4",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"保存设置失败: {str(e)}")

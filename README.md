@@ -103,12 +103,15 @@ collectly/
 │
 ├── tests/                      # Platform-specific tests
 │
-├── start.bat                   # Windows startup script
+├── start.bat                   # Windows CMD startup script
 ├── start.ps1                   # PowerShell startup script
+├── start.sh                    # Linux/macOS startup script
 ├── Dockerfile                  # Docker build file
 ├── docker-compose.yml          # Docker Compose configuration
-├── deploy.ps1                  # One-click deployment (Windows)
+├── deploy.ps1                  # One-click deployment (Windows PowerShell)
 ├── deploy.sh                   # One-click deployment (Linux/macOS)
+├── deploy-local.ps1            # Local interactive deployment (Windows)
+├── deploy-local.sh             # Local interactive deployment (Linux/macOS)
 ├── .env.example                # Environment variables template
 ├── requirements.txt            # Python dependencies
 └── pyproject.toml              # Python project configuration
@@ -117,10 +120,19 @@ collectly/
 ## Quick Start
 
 ### Prerequisites
-- Python 3.8+
+- [uv](https://docs.astral.sh/uv/) (Python package & virtual environment manager)
 - Node.js 16+ (frontend build)
 - TikHub API Key (platform access)
 - DashScope API Key (AI capabilities)
+
+**Install uv:**
+```powershell
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Linux/macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ### Option 1: One-Click Deployment Script (Recommended)
 
@@ -151,8 +163,8 @@ cd collectly
 ```
 
 **The deployment script automatically:**
-- ✅ Environment check (Python, Node.js)
-- ✅ Virtual environment creation
+- ✅ Environment check (uv, Node.js)
+- ✅ Virtual environment creation & dependency sync (via uv)
 - ✅ Dependency installation (frontend & backend)
 - ✅ Environment variable configuration
 - ✅ Backend service startup
@@ -192,22 +204,25 @@ Access URLs:
 git clone <repository-url>
 cd collectly
 
-# Setup backend
-python -m venv .venv
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/macOS
-pip install -r requirements.txt
+# Install uv (if not installed)
+# Windows: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Linux/macOS: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Sync virtual environment and dependencies
+uv sync
 
 # Configure environment
 cp .env.example .env
 # Edit .env with your API keys
 
 # Start backend (Terminal 1)
-.\start.bat  # Windows
+.\start.bat   # Windows CMD
 # or
-.\start.ps1  # PowerShell
+.\start.ps1   # Windows PowerShell
 # or
-python -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+./start.sh    # Linux/macOS
+# or
+uv run uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Build and start frontend (Terminal 2)
 cd ..

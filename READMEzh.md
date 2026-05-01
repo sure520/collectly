@@ -101,12 +101,15 @@ collectly/
 │
 ├── tests/                      # 平台特定测试
 │
-├── start.bat                   # Windows 启动脚本
+├── start.bat                   # Windows CMD 启动脚本
 ├── start.ps1                   # PowerShell 启动脚本
+├── start.sh                    # Linux/macOS 启动脚本
 ├── Dockerfile                  # Docker 构建文件
 ├── docker-compose.yml          # Docker Compose 配置
-├── deploy.ps1                  # 一键部署脚本 (Windows)
+├── deploy.ps1                  # 一键部署脚本 (Windows PowerShell)
 ├── deploy.sh                   # 一键部署脚本 (Linux/macOS)
+├── deploy-local.ps1            # 本地交互式部署 (Windows)
+├── deploy-local.sh             # 本地交互式部署 (Linux/macOS)
 ├── .env.example                # 环境变量模板
 ├── requirements.txt            # Python 依赖
 └── pyproject.toml              # Python 项目配置
@@ -115,10 +118,19 @@ collectly/
 ## 快速开始
 
 ### 环境要求
-- Python 3.8+
+- [uv](https://docs.astral.sh/uv/)（Python 包管理器 & 虚拟环境管理）
 - Node.js 16+（前端构建）
 - TikHub API 密钥（平台接入）
 - DashScope API 密钥（AI 能力）
+
+**安装 uv：**
+```powershell
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Linux/macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ### 方式一：一键部署脚本（推荐）
 
@@ -149,8 +161,8 @@ cd collectly
 ```
 
 **部署脚本自动完成：**
-- ✅ 环境检查（Python、Node.js）
-- ✅ 虚拟环境创建
+- ✅ 环境检查（uv、Node.js）
+- ✅ 虚拟环境创建 & 依赖同步（通过 uv）
 - ✅ 依赖安装（前后端）
 - ✅ 环境变量配置
 - ✅ 后端服务启动
@@ -190,22 +202,25 @@ docker-compose down
 git clone <仓库地址>
 cd collectly
 
-# 设置后端
-python -m venv .venv
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/macOS
-pip install -r requirements.txt
+# 安装 uv（如未安装）
+# Windows: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Linux/macOS: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 同步虚拟环境和依赖
+uv sync
 
 # 配置环境
 cp .env.example .env
 # 编辑 .env 填入你的 API 密钥
 
 # 启动后端（终端 1）
-.\start.bat  # Windows
+.\start.bat   # Windows CMD
 # 或
-.\start.ps1  # PowerShell
+.\start.ps1   # Windows PowerShell
 # 或
-python -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+./start.sh    # Linux/macOS
+# 或
+uv run uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 
 # 构建并启动前端（终端 2）
 cd ..

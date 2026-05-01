@@ -66,15 +66,15 @@ collectly/
 
 ### 环境要求
 
-- Python 3.9+
+- [uv](https://docs.astral.sh/uv/)（Python 包管理器 & 虚拟环境管理）
 - Node.js 16+
-- npm 或 yarn
+- npm
 
 ### 后端设置
 
 1. 安装依赖（在项目根目录）：
    ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 
 2. 配置环境变量：
@@ -86,7 +86,7 @@ collectly/
 
 3. 启动后端服务：
    ```bash
-   python -m uvicorn backend.app.main:app --reload --port 8000
+   uv run uvicorn backend.app.main:app --reload --port 8000
    ```
 
 ### 前端设置

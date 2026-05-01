@@ -239,9 +239,11 @@ MIT License
 **启动命令：**
 ```bash
 cd backend
-python -m app.main
-# 或
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# 使用 uv 启动（推荐）
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# 或使用启动脚本
+.\start.bat   # Windows CMD
+.\start.ps1   # PowerShell
 ```
 
 #### 4.1.2 路由模块 ([`backend/app/api/routes.py`](file:///workspace/backend/app/api/routes.py))
@@ -923,33 +925,19 @@ QDRANT_CLUSTER_ENDPOINT=
 
 ### 7.2 后端启动
 
-#### 方式一：直接运行 Python
+#### 方式一：使用 uv（推荐）
 
 ```bash
-cd backend
+# 在项目根目录执行
 
-# 创建虚拟环境（首次）
-python -m venv .venv
-
-# 激活虚拟环境
-source .venv/bin/activate  # Linux/Mac
-.venv\Scripts\activate     # Windows
-
-# 安装依赖
-pip install -r requirements.txt
+# 同步虚拟环境和依赖（首次）
+uv sync
 
 # 启动服务
-python -m app.main
+uv run uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-#### 方式二：使用 Uvicorn
-
-```bash
-cd backend
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-#### 方式三：使用启动脚本
+#### 方式二：使用启动脚本
 
 **Windows (PowerShell):**
 ```powershell
@@ -1253,22 +1241,24 @@ GET /api/learning-stats
 
 2. **设置后端**
    ```bash
-   cd backend
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
+   # 安装 uv（如未安装）
+   # Windows: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   # Linux/macOS: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # 同步虚拟环境和依赖
+   uv sync
+
    cp .env.example .env
    # 编辑 .env 填入 API keys
    ```
 
 3. **设置前端**
    ```bash
-   cd ..  # 返回项目根目录
    npm install
    ```
 
 4. **启动开发服务器**
-   - 终端 1（后端）：`cd backend && python -m app.main`
+   - 终端 1（后端）：`uv run uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000`
    - 终端 2（前端）：`npm run dev`
 
 ### 10.2 代码规范

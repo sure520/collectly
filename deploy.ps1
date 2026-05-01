@@ -1,9 +1,10 @@
-﻿# ============================================
+# ============================================
 # Collectly 一键部署脚本 (Windows PowerShell)
 # ============================================
 # 支持两种部署模式：
 #   方案A：本地部署 + 内网穿透（Cloudflare Tunnel）
 #   方案B：云服务器公网部署
+# 使用 uv 管理 Python 虚拟环境
 # ============================================
 
 param(
@@ -41,6 +42,10 @@ function Show-Help {
     Write-Host "方案A 适用场景：个人电脑本地运行，通过 Cloudflare Tunnel 外网访问"
     Write-Host "方案B 适用场景：云服务器 24h 在线运行，直接公网访问"
     Write-Host ""
+    Write-Host "前置要求: uv（Python 包管理器）"
+    Write-Host "  安装: powershell -ExecutionPolicy ByPass -c `"irm https://astral.sh/uv/install.ps1 | iex`""
+    Write-Host "  或:   winget install astral-sh.uv"
+    Write-Host ""
     exit 0
 }
 
@@ -59,12 +64,15 @@ Write-Host ""
 # ============================================
 Write-Color Yellow "[1/6] 检查运行环境..."
 
-# 检查 Python
+# 检查 uv
 try {
-    $pythonVersion = python --version 2>&1
-    Write-Color Green "  ✓ Python: $pythonVersion"
+    $uvVersion = uv --version 2>&1
+    Write-Color Green "  ✓ uv: $uvVersion"
 } catch {
-    Write-Color Red "  ✗ Python 未安装，请安装 Python 3.8+"
+    Write-Color Red "  ✗ uv 未安装，请先安装 uv"
+    Write-Host "    安装方式一: powershell -ExecutionPolicy ByPass -c `"irm https://astral.sh/uv/install.ps1 | iex`""
+    Write-Host "    安装方式二: winget install astral-sh.uv"
+    Write-Host "    详情: https://docs.astral.sh/uv/getting-started/installation/"
     exit 1
 }
 
@@ -122,29 +130,13 @@ if (-not $SkipBackend) {
 
     Set-Location $ProjectRoot
 
-    # 检查虚拟环境
-    $venvPath = Join-Path $ProjectRoot ".venv"
-    if (-not (Test-Path $venvPath)) {
-        Write-Host "  - 创建 Python 虚拟环境..."
-        python -m venv .venv
-        if (-not $?) {
-            Write-Color Red "  ✗ 创建虚拟环境失败"
-            exit 1
-        }
-        Write-Color Green "  ✓ 虚拟环境已创建"
-    } else {
-        Write-Color Green "  ✓ 虚拟环境已存在"
-    }
-
-    # 安装依赖
-    Write-Host "  - 安装 Python 依赖..."
-    $pip = Join-Path $venvPath "Scripts\pip"
-    & $pip install -r requirements.txt --quiet
+    Write-Host "  - 同步虚拟环境和依赖 (uv sync)..."
+    uv sync
     if (-not $?) {
-        Write-Color Red "  ✗ 安装依赖失败"
+        Write-Color Red "  ✗ 同步依赖失败"
         exit 1
     }
-    Write-Color Green "  ✓ Python 依赖安装完成"
+    Write-Color Green "  ✓ Python 依赖安装完成（uv sync）"
 
     Set-Location $ProjectRoot
 } else {
@@ -201,7 +193,6 @@ if ($envContent) {
     $backendPort = ($envContent -split "=")[1].Trim()
 }
 
-$uvicornPath = Join-Path $ProjectRoot ".venv\Scripts\uvicorn"
 $logDir = Join-Path $ProjectRoot "logs"
 if (-not (Test-Path $logDir)) {
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
@@ -212,10 +203,10 @@ Write-Host "  - 日志目录：$logDir"
 
 # 启动后端（后台运行）
 $backendJob = Start-Job -ScriptBlock {
-    param($uvicornPath, $projectRoot, $backendPort)
+    param($projectRoot, $backendPort)
     Set-Location $projectRoot
-    & $uvicornPath backend.app.main:app --host 0.0.0.0 --port $backendPort --log-level info
-} -ArgumentList $uvicornPath, $ProjectRoot, $backendPort
+    uv run uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --log-level info
+} -ArgumentList $ProjectRoot, $backendPort
 
 Write-Color Green "  ✓ 后端服务已启动（后台运行）"
 Write-Host ""

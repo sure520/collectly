@@ -40,29 +40,24 @@ class LLMService:
     DashScope LLM 服务客户端
     
     提供与大语言模型的交互功能，支持内容摘要、标签生成、知识点提取等功能
-    使用 qwen-plus 模型
     """
-    
-    LLM_MODEL_NAME = "qwen-plus"
-    ASR_MODEL_NAME = "qwen3-asr-flash"
+
     DEFAULT_TIMEOUT = 60
     MAX_RETRIES = 3
     RETRY_DELAY = 1.0
     
     def __init__(self, api_key: Optional[str] = None):
-        """
-        初始化 LLM 服务
-        
-        Args:
-            api_key: DashScope API Key，如果不传则从环境变量获取
-        """
-        self.api_key = api_key or settings.DASHSCOPE_API_KEY
+        cfg = get_settings()
+        self.api_key = api_key or cfg.DASHSCOPE_API_KEY
         if not self.api_key:
             raise LLMServiceError("DashScope API Key 未配置")
         
+        self.LLM_MODEL_NAME = cfg.LLM_MODEL_NAME or "qwen3.5-plus"
+        self.ASR_MODEL_NAME = cfg.ASR_MODEL_NAME or "qwen3-asr-flash"
+        
         dashscope.api_key = self.api_key
     
-    def _validate_input(self, content: str, max_length: int = 10000) -> None:
+    def _validate_input(self, content: str, max_length: int = 100000) -> None:
         """
         输入内容校验
         

@@ -5,6 +5,7 @@
 # 支持两种部署模式：
 #   方案A：本地部署 + 内网穿透（Cloudflare Tunnel）
 #   方案B：云服务器公网部署
+# 使用 uv 管理 Python 虚拟环境
 # ============================================
 
 set -e
@@ -55,6 +56,10 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "方案A 适用场景：个人电脑本地运行，通过 Cloudflare Tunnel 外网访问"
             echo "方案B 适用场景：云服务器 24h 在线运行，直接公网访问"
+            echo ""
+            echo "前置要求: uv（Python 包管理器）"
+            echo "  安装: curl -LsSf https://astral.sh/uv/install.sh | sh"
+            echo "  详情: https://docs.astral.sh/uv/getting-started/installation/"
             exit 0
             ;;
         *)
@@ -76,16 +81,15 @@ echo ""
 # ============================================
 echo -e "${YELLOW}[1/6] 检查运行环境...${NC}"
 
-# 检查 Python
-if command -v python3 &> /dev/null; then
-    PYTHON=python3
-elif command -v python &> /dev/null; then
-    PYTHON=python
+# 检查 uv
+if command -v uv &> /dev/null; then
+    echo -e "${GREEN}  ✓ uv: $(uv --version)${NC}"
 else
-    echo -e "${RED}  ✗ Python 未安装，请安装 Python 3.8+${NC}"
+    echo -e "${RED}  ✗ uv 未安装，请先安装 uv${NC}"
+    echo "    安装: curl -LsSf https://astral.sh/uv/install.sh | sh"
+    echo "    详情: https://docs.astral.sh/uv/getting-started/installation/"
     exit 1
 fi
-echo -e "${GREEN}  ✓ Python: $($PYTHON --version)${NC}"
 
 # 检查 Node.js
 if command -v node &> /dev/null; then
@@ -137,25 +141,13 @@ if [ "$SKIP_BACKEND" = false ]; then
 
     cd "$PROJECT_ROOT"
 
-    # 检查虚拟环境
-    if [ ! -d ".venv" ]; then
-        echo "  - 创建 Python 虚拟环境..."
-        $PYTHON -m venv .venv
-        echo -e "${GREEN}  ✓ 虚拟环境已创建${NC}"
-    else
-        echo -e "${GREEN}  ✓ 虚拟环境已存在${NC}"
-    fi
-
-    # 安装依赖
-    echo "  - 安装 Python 依赖..."
-    source .venv/bin/activate
-    pip install -r requirements.txt --quiet
+    echo "  - 同步虚拟环境和依赖 (uv sync)..."
+    uv sync
     if [ $? -ne 0 ]; then
-        echo -e "${RED}  ✗ 安装依赖失败${NC}"
+        echo -e "${RED}  ✗ 同步依赖失败${NC}"
         exit 1
     fi
-    deactivate
-    echo -e "${GREEN}  ✓ Python 依赖安装完成${NC}"
+    echo -e "${GREEN}  ✓ Python 依赖安装完成（uv sync）${NC}"
 
     cd "$PROJECT_ROOT"
 else
@@ -203,7 +195,6 @@ if grep -q "^BACKEND_PORT=" "$ENV_FILE" 2>/dev/null; then
     BACKEND_PORT=$(grep "^BACKEND_PORT=" "$ENV_FILE" | cut -d'=' -f2)
 fi
 
-UVICORN_PATH="$PROJECT_ROOT/.venv/bin/uvicorn"
 LOG_DIR="$PROJECT_ROOT/logs"
 if [ ! -d "$LOG_DIR" ]; then
     mkdir -p "$LOG_DIR"
@@ -214,7 +205,7 @@ echo "  - 日志目录：$LOG_DIR"
 
 # 启动后端（后台运行）
 cd "$PROJECT_ROOT"
-nohup "$UVICORN_PATH" backend.app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" --log-level info > "$LOG_DIR/backend.log" 2>&1 &
+nohup uv run uvicorn backend.app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" --log-level info > "$LOG_DIR/backend.log" 2>&1 &
 BACKEND_PID=$!
 
 echo -e "${GREEN}  ✓ 后端服务已启动（PID: $BACKEND_PID）${NC}"

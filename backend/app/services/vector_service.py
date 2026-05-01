@@ -38,8 +38,9 @@ class CustomEmbeddingFunction(EmbeddingFunction):
     MAX_TOKENS = 8000
 
     def __init__(self):
-        self.model = settings.EMBEDDING_MODEL or self.DEFAULT_MODEL
-        self.api_key = settings.DASHSCOPE_API_KEY
+        cfg = get_settings()
+        self.model = cfg.EMBEDDING_MODEL or self.DEFAULT_MODEL
+        self.api_key = cfg.DASHSCOPE_API_KEY
 
         if not self.api_key:
             raise RuntimeError("DashScope API Key (DASHSCOPE_API_KEY) 未配置")

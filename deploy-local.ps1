@@ -1,6 +1,7 @@
-﻿# ============================================
+# ============================================
 # Collectly 一键部署脚本 (Windows PowerShell)
 # 支持双部署模式：本地部署/云服务器部署
+# 使用 uv 管理 Python 虚拟环境
 # ============================================
 
 $ErrorActionPreference = "Stop"
@@ -59,16 +60,18 @@ Write-Host "  步骤1: 检查运行环境" -ForegroundColor Cyan
 Write-Host "=============================" -ForegroundColor Cyan
 Write-Host ""
 
-# 检查Python
-Write-Host "[检查] Python环境..." -ForegroundColor Yellow
-$pythonVersion = python --version 2>&1
+# 检查uv
+Write-Host "[检查] uv 环境..." -ForegroundColor Yellow
+$uvVersion = uv --version 2>&1
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "[错误] 未检测到Python，请先安装Python 3.9+" -ForegroundColor Red
-    Write-Host "  下载地址: https://www.python.org/downloads/" -ForegroundColor White
+    Write-Host "[错误] 未检测到uv，请先安装uv" -ForegroundColor Red
+    Write-Host "  安装方式一: powershell -ExecutionPolicy ByPass -c `"irm https://astral.sh/uv/install.ps1 | iex`"" -ForegroundColor White
+    Write-Host "  安装方式二: winget install astral-sh.uv" -ForegroundColor White
+    Write-Host "  详情: https://docs.astral.sh/uv/getting-started/installation/" -ForegroundColor White
     Read-Host "按 Enter 退出"
     exit 1
 }
-Write-Host "[完成] $pythonVersion" -ForegroundColor Green
+Write-Host "[完成] $uvVersion" -ForegroundColor Green
 
 # 检查Node.js
 Write-Host "[检查] Node.js环境..." -ForegroundColor Yellow
@@ -135,32 +138,14 @@ Write-Host "  步骤3: 安装后端依赖" -ForegroundColor Cyan
 Write-Host "=============================" -ForegroundColor Cyan
 Write-Host ""
 
-# 检查虚拟环境
-$venvPath = Join-Path $ScriptDir ".venv"
-$pythonPath = Join-Path $venvPath "Scripts\python.exe"
-if (-not (Test-Path $pythonPath)) {
-    Write-Host "[信息] 创建 Python 虚拟环境..." -ForegroundColor Yellow
-    python -m venv .venv
-    if (-not $?) {
-        Write-Host "[错误] 创建虚拟环境失败" -ForegroundColor Red
-        Read-Host "按 Enter 退出"
-        exit 1
-    }
-    Write-Host "[完成] 虚拟环境已创建" -ForegroundColor Green
-} else {
-    Write-Host "[完成] 虚拟环境已存在" -ForegroundColor Green
-}
-
-# 安装依赖
-Write-Host "[信息] 安装 Python 依赖..." -ForegroundColor Yellow
-$pip = Join-Path $venvPath "Scripts\pip"
-& $pip install -r requirements.txt --quiet
+Write-Host "[信息] 同步虚拟环境和依赖 (uv sync)..." -ForegroundColor Yellow
+uv sync
 if (-not $?) {
-    Write-Host "[错误] 安装依赖失败" -ForegroundColor Red
+    Write-Host "[错误] 同步依赖失败" -ForegroundColor Red
     Read-Host "按 Enter 退出"
     exit 1
 }
-Write-Host "[完成] Python 依赖安装完成" -ForegroundColor Green
+Write-Host "[完成] 依赖同步完成" -ForegroundColor Green
 
 # ================================
 # 步骤5: 构建前端
@@ -215,13 +200,11 @@ if (-not (Test-Path $logDir)) {
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
 }
 
-$uvicorn = Join-Path $venvPath "Scripts\uvicorn"
-
 Write-Host "[信息] 启动后端服务 (端口: $backendPort)..." -ForegroundColor Yellow
 Write-Host ""
 
 # 启动后端
-& $uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --reload --log-level info
+uv run uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --reload --log-level info
 
 Write-Host ""
 Write-Host "[完成] 后端服务已停止" -ForegroundColor Yellow
