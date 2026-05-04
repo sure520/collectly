@@ -8,7 +8,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 class LearningManager:
     def __init__(self):
-        self.db_path = str(PROJECT_ROOT / "knowledge.db")
+        db_dir = PROJECT_ROOT / "data"
+        db_dir.mkdir(parents=True, exist_ok=True)
+        self.db_path = str(db_dir / "knowledge.db")
     
     async def update_status(self, content_id: str, status: str) -> bool:
         """更新学习状态"""

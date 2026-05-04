@@ -11,13 +11,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 
 # 安装 Python 依赖
-RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com -r requirements.txt
+RUN pip install --no-cache-dir --retries 10 --timeout 300 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com -r requirements.txt
 
 # 复制应用代码（backend 目录）
 COPY backend/ ./backend/
 
 # 创建数据目录
-RUN mkdir -p /app/data /app/logs /app/chroma_db
+RUN mkdir -p /app/data /app/logs
 
 # 暴露端口
 EXPOSE 8000

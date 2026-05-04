@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link2, Loader2, CheckCircle, AlertCircle, Plus, X, RefreshCw } from 'lucide-react';
 import { detectPlatform, getPlatformName, getPlatformIcon, getPlatformColor } from '../utils/platform';
+import { cleanUrls } from '../utils/api';
 import type { Platform } from '../types';
 
 interface LinkInputProps {
@@ -48,18 +49,7 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
     setIsCleaning(true);
 
     try {
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
-      const response = await fetch(`${API_BASE_URL}/clean-urls`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ raw_texts: urls }),
-      });
-
-      if (!response.ok) {
-        throw new Error('链接清理失败');
-      }
-
-      const cleanedResults = await response.json();
+      const cleanedResults = await cleanUrls(urls);
 
       const newLinks: LinkItem[] = cleanedResults.map((result: { cleaned_url: string; is_valid: boolean }) => {
         const trimmed = result.cleaned_url.trim();

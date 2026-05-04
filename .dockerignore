@@ -10,5 +10,13 @@ dist/
 .idea/
 logs/
 data/
-chroma_db/
+chroma_data/
 *.log
+python-parser/
+docs/
+.wiki/
+.plan/
+.trae/
+functions/
+tests/
+assets/

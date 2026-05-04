@@ -14,7 +14,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 class ContentManager:
     def __init__(self):
-        self.db_path = str(PROJECT_ROOT / "knowledge.db")
+        db_dir = PROJECT_ROOT / "data"
+        db_dir.mkdir(parents=True, exist_ok=True)
+        self.db_path = str(db_dir / "knowledge.db")
         self._init_db()
         self.vector_service = VectorService()
         if self.vector_service.needs_rebuild:

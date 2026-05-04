@@ -1,9 +1,14 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from app.services.platform_parser import PlatformParser, process_url
 from app.services.content_manager import ContentManager
 from app.services.search_engine import SearchEngine
 from app.services.learning_manager import LearningManager
 from app.utils.config import get_settings, update_settings
+from app.utils.auth import (
+    get_current_user, get_password_hash, verify_password,
+    create_access_token, check_rate_limit, record_login_attempt,
+    clear_login_attempts, ACCESS_PASSWORD, TOKEN_EXPIRE_HOURS,
+)
 from app.models.schemas import (
     LinkInput, ContentResponse, SearchQuery, SearchResult,
     PaginatedSearchResult, LearningStatusUpdate, TagUpdate, NoteUpdate
@@ -18,6 +23,53 @@ content_manager = ContentManager()
 search_engine = SearchEngine()
 learning_manager = LearningManager()
 
+
+class LoginRequest(BaseModel):
+    password: str
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+
+class AuthStatus(BaseModel):
+    auth_required: bool
+    authenticated: bool
+
+
+@router.get("/auth/status", response_model=AuthStatus)
+async def auth_status():
+    auth_required = bool(ACCESS_PASSWORD)
+    return AuthStatus(auth_required=auth_required, authenticated=not auth_required)
+
+
+@router.post("/auth/login", response_model=LoginResponse)
+async def login(body: LoginRequest, request: Request):
+    if not ACCESS_PASSWORD:
+        raise HTTPException(status_code=400, detail="未设置访问密码，无需登录")
+
+    client_ip = request.client.host if request.client else "unknown"
+    check_rate_limit(client_ip)
+
+    stored_hash = get_password_hash()
+    if not verify_password(body.password, stored_hash):
+        record_login_attempt(client_ip)
+        raise HTTPException(status_code=401, detail="密码错误")
+
+    clear_login_attempts(client_ip)
+    token = create_access_token()
+    return LoginResponse(
+        access_token=token,
+        expires_in=TOKEN_EXPIRE_HOURS * 3600,
+    )
+
+
+@router.post("/auth/verify", response_model=dict)
+async def verify_auth(user: dict = Depends(get_current_user)):
+    return {"authenticated": True}
+
 class CleanUrlRequest(BaseModel):
     raw_texts: List[str]
 
@@ -27,7 +79,7 @@ class CleanUrlResponse(BaseModel):
 
 # URL 清理端点
 @router.post("/clean-urls", response_model=List[CleanUrlResponse])
-async def clean_urls(request: CleanUrlRequest):
+async def clean_urls(request: CleanUrlRequest, user: dict = Depends(get_current_user)):
     """清理应用分享的文本，提取并还原真实 URL"""
     results = []
     for raw_text in request.raw_texts:
@@ -42,7 +94,7 @@ async def clean_urls(request: CleanUrlRequest):
 
 # 链接解析端点
 @router.post("/parse-link", response_model=ContentResponse)
-async def parse_link(link_input: LinkInput):
+async def parse_link(link_input: LinkInput, user: dict = Depends(get_current_user)):
     """解析平台链接，提取内容"""
     try:
         result = await platform_parser.parse(link_input.url)
@@ -52,7 +104,7 @@ async def parse_link(link_input: LinkInput):
 
 # 批量解析端点
 @router.post("/parse-links", response_model=List[ContentResponse])
-async def parse_links(links: List[LinkInput]):
+async def parse_links(links: List[LinkInput], user: dict = Depends(get_current_user)):
     """批量解析平台链接"""
     results = []
     for link in links:
@@ -77,7 +129,7 @@ async def parse_links(links: List[LinkInput]):
 
 # 内容存储端点
 @router.post("/save-content", response_model=dict)
-async def save_content(content: ContentResponse):
+async def save_content(content: ContentResponse, user: dict = Depends(get_current_user)):
     """保存解析后的内容"""
     try:
         content_id = await content_manager.save(content)
@@ -87,7 +139,7 @@ async def save_content(content: ContentResponse):
 
 # 内容检索端点
 @router.post("/search", response_model=PaginatedSearchResult)
-async def search(query: SearchQuery):
+async def search(query: SearchQuery, user: dict = Depends(get_current_user)):
     """智能检索内容"""
     try:
         results = await search_engine.search(
@@ -109,7 +161,7 @@ async def search(query: SearchQuery):
 
 # 学习状态更新端点
 @router.put("/update-learning-status", response_model=dict)
-async def update_learning_status(update: LearningStatusUpdate):
+async def update_learning_status(update: LearningStatusUpdate, user: dict = Depends(get_current_user)):
     """更新学习状态"""
     try:
         await learning_manager.update_status(update.content_id, update.status)
@@ -119,7 +171,7 @@ async def update_learning_status(update: LearningStatusUpdate):
 
 # 标签更新端点
 @router.put("/update-tags", response_model=dict)
-async def update_tags(update: TagUpdate):
+async def update_tags(update: TagUpdate, user: dict = Depends(get_current_user)):
     """更新标签"""
     try:
         await learning_manager.update_tags(update.content_id, update.tags)
@@ -129,7 +181,7 @@ async def update_tags(update: TagUpdate):
 
 # 笔记更新端点
 @router.put("/update-note", response_model=dict)
-async def update_note(update: NoteUpdate):
+async def update_note(update: NoteUpdate, user: dict = Depends(get_current_user)):
     """更新笔记"""
     try:
         await learning_manager.update_note(update.content_id, update.note)
@@ -139,7 +191,7 @@ async def update_note(update: NoteUpdate):
 
 # 删除内容端点
 @router.delete("/content/{content_id}", response_model=dict)
-async def delete_content(content_id: str):
+async def delete_content(content_id: str, user: dict = Depends(get_current_user)):
     """删除内容"""
     try:
         success = await content_manager.delete(content_id)
@@ -154,7 +206,7 @@ async def delete_content(content_id: str):
 
 # 获取内容详情端点
 @router.get("/content/{content_id}", response_model=ContentResponse)
-async def get_content(content_id: str):
+async def get_content(content_id: str, user: dict = Depends(get_current_user)):
     """获取内容详情"""
     try:
         content = await content_manager.get(content_id)
@@ -164,7 +216,7 @@ async def get_content(content_id: str):
 
 # 获取学习统计端点
 @router.get("/learning-stats", response_model=dict)
-async def get_learning_stats():
+async def get_learning_stats(user: dict = Depends(get_current_user)):
     """获取学习统计数据"""
     try:
         stats = await learning_manager.get_stats()
@@ -174,7 +226,7 @@ async def get_learning_stats():
 
 # 获取向量库统计端点
 @router.get("/vector-stats", response_model=dict)
-async def get_vector_stats():
+async def get_vector_stats(user: dict = Depends(get_current_user)):
     """获取向量库统计信息"""
     try:
         stats = await content_manager.get_vector_stats()
@@ -184,7 +236,7 @@ async def get_vector_stats():
 
 # 重新嵌入内容向量端点
 @router.post("/re-embed/{content_id}", response_model=dict)
-async def re_embed_content(content_id: str):
+async def re_embed_content(content_id: str, user: dict = Depends(get_current_user)):
     """重新生成指定内容的向量"""
     try:
         content = await content_manager.get(content_id)
@@ -211,7 +263,7 @@ async def re_embed_content(content_id: str):
 
 # 全量重建向量索引端点
 @router.post("/rebuild-vectors", response_model=dict)
-async def rebuild_all_vectors():
+async def rebuild_all_vectors(user: dict = Depends(get_current_user)):
     """全量重建向量索引"""
     try:
         content_manager.vector_service.reset_collection()
@@ -262,7 +314,7 @@ class AppSettings(BaseModel):
 
 
 @router.get("/settings", response_model=AppSettings)
-async def get_app_settings():
+async def get_app_settings(user: dict = Depends(get_current_user)):
     cfg = get_settings()
     return AppSettings(
         tikhub_api_key=cfg.TIKHUB_API_KEY,
@@ -275,7 +327,7 @@ async def get_app_settings():
 
 
 @router.post("/settings", response_model=AppSettings)
-async def save_app_settings(body: AppSettings):
+async def save_app_settings(body: AppSettings, user: dict = Depends(get_current_user)):
     try:
         mapping = {
             "TIKHUB_API_KEY": body.tikhub_api_key,

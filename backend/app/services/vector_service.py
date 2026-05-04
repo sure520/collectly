@@ -130,7 +130,7 @@ class VectorService:
     COLLECTION_NAME = "knowledge_embeddings"
 
     def __init__(self, persist_directory: Optional[str] = None):
-        self.persist_dir = persist_directory or str(PROJECT_ROOT / "chroma_data")
+        self.persist_dir = persist_directory or str(PROJECT_ROOT / "data" / "chroma_data")
 
         os.makedirs(self.persist_dir, exist_ok=True)
 

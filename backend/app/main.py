@@ -1,7 +1,9 @@
 import sys
+import os
 from pathlib import Path
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 
 # 将 backend 目录添加到模块搜索路径，支持从项目根目录启动
@@ -14,6 +16,7 @@ from app.services.platform_parser import PlatformParser
 from app.utils.config import get_settings
 from app.utils.logger import get_logger
 from app.utils.exceptions import register_exception_handlers
+from app.utils.auth import verify_token, ACCESS_PASSWORD
 
 settings = get_settings()
 logger = get_logger("main")
@@ -37,11 +40,25 @@ register_exception_handlers(app)
 # 配置 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 在生产环境中应该设置具体的前端域名
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def protect_docs_middleware(request: Request, call_next):
+    if ACCESS_PASSWORD and request.url.path in ("/docs", "/redoc", "/openapi.json"):
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return JSONResponse(status_code=401, content={"detail": "认证已过期，请重新登录"})
+        token = auth_header[7:]
+        try:
+            verify_token(token)
+        except Exception:
+            return JSONResponse(status_code=401, content={"detail": "认证已过期，请重新登录"})
+    return await call_next(request)
 
 # 注册路由
 app.include_router(routes.router, prefix="/api")
