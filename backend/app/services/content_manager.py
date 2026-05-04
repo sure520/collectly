@@ -41,7 +41,8 @@ class ContentManager:
                     source=content["source"],
                     tags=content["tags"],
                     knowledge_points=content["knowledge_points"],
-                    summary=content["summary"]
+                    short_summary=content.get("short_summary", ""),
+                    long_summary=content.get("long_summary", ""),
                 )
                 embedding_text = self._build_embedding_text(content_obj)
                 metadata = {
@@ -68,7 +69,7 @@ class ContentManager:
             cursor = conn.cursor()
             cursor.execute('''
                 SELECT id, title, content, author, update_date, create_date, url, source, 
-                       tags, knowledge_points, summary
+                       tags, knowledge_points, short_summary, long_summary
                 FROM content
             ''')
             rows = cursor.fetchall()
@@ -85,12 +86,13 @@ class ContentManager:
                     "source": row[7],
                     "tags": json.loads(row[8]) if row[8] else [],
                     "knowledge_points": json.loads(row[9]) if row[9] else [],
-                    "summary": row[10]
+                    "short_summary": row[10] or "",
+                    "long_summary": row[11] or "",
                 })
             return results
     
     def _init_db(self):
-        """初始化数据库"""
+        """初始化数据库并执行迁移"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
@@ -106,9 +108,27 @@ class ContentManager:
                     tags TEXT,
                     knowledge_points TEXT,
                     summary TEXT,
+                    short_summary TEXT DEFAULT '',
+                    long_summary TEXT DEFAULT '',
                     hash TEXT UNIQUE
                 )
             ''')
+
+            cursor.execute("PRAGMA table_info(content)")
+            columns = {row[1] for row in cursor.fetchall()}
+
+            if "short_summary" not in columns:
+                cursor.execute("ALTER TABLE content ADD COLUMN short_summary TEXT DEFAULT ''")
+                logger.info("数据库迁移：新增 short_summary 列")
+
+            if "long_summary" not in columns:
+                cursor.execute("ALTER TABLE content ADD COLUMN long_summary TEXT DEFAULT ''")
+                logger.info("数据库迁移：新增 long_summary 列")
+
+            if "summary" in columns and "short_summary" in columns and "long_summary" in columns:
+                cursor.execute("UPDATE content SET short_summary = COALESCE(short_summary, summary, '') WHERE short_summary IS NULL OR short_summary = ''")
+                cursor.execute("UPDATE content SET long_summary = COALESCE(long_summary, summary, '') WHERE long_summary IS NULL OR long_summary = ''")
+
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS learning_status (
                     content_id TEXT PRIMARY KEY,
@@ -120,15 +140,14 @@ class ContentManager:
             conn.commit()
     
     def _build_embedding_text(self, content: ContentResponse) -> str:
-        """构建用于向量化的完整文本"""
+        """构建用于向量化的完整文本（优先使用长摘要）"""
         parts = []
         if content.title:
             parts.append(f"标题: {content.title}")
-        if content.summary:
-            parts.append(f"摘要: {content.summary}")
-        if content.content:
-            content_text = content.content[:3000]
-            parts.append(f"内容: {content_text}")
+        if content.long_summary:
+            parts.append(f"摘要: {content.long_summary}")
+        elif content.short_summary:
+            parts.append(f"摘要: {content.short_summary}")
         if content.knowledge_points:
             parts.append(f"知识点: {', '.join(content.knowledge_points)}")
         if content.tags:
@@ -151,8 +170,8 @@ class ContentManager:
                 cursor.execute('''
                     INSERT INTO content (
                         id, title, content, author, update_date, create_date, url, source, 
-                        tags, knowledge_points, summary, hash
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        tags, knowledge_points, short_summary, long_summary, hash
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     content_id,
                     content.title,
@@ -164,7 +183,8 @@ class ContentManager:
                     content.source,
                     json.dumps(content.tags),
                     json.dumps(content.knowledge_points),
-                    content.summary,
+                    content.short_summary,
+                    content.long_summary,
                     content_hash
                 ))
                 cursor.execute('''
@@ -196,7 +216,7 @@ class ContentManager:
             cursor = conn.cursor()
             cursor.execute('''
                 SELECT title, content, author, update_date, create_date, url, source, 
-                       tags, knowledge_points, summary
+                       tags, knowledge_points, short_summary, long_summary
                 FROM content
                 WHERE id = ?
             ''', (content_id,))
@@ -214,7 +234,8 @@ class ContentManager:
                 source=row[6],
                 tags=json.loads(row[7]) if row[7] else [],
                 knowledge_points=json.loads(row[8]) if row[8] else [],
-                summary=row[9]
+                short_summary=row[9] or "",
+                long_summary=row[10] or "",
             )
     
     async def _check_duplicate(self, content_hash: str, url: str) -> Optional[str]:
@@ -255,7 +276,7 @@ class ContentManager:
             cursor.execute('''
                 UPDATE content
                 SET title = ?, content = ?, author = ?, update_date = ?, 
-                    tags = ?, knowledge_points = ?, summary = ?, hash = ?
+                    tags = ?, knowledge_points = ?, short_summary = ?, long_summary = ?, hash = ?
                 WHERE id = ?
             ''', (
                 content.title,
@@ -264,7 +285,8 @@ class ContentManager:
                 content.update,
                 json.dumps(content.tags),
                 json.dumps(content.knowledge_points),
-                content.summary,
+                content.short_summary,
+                content.long_summary,
                 content_hash,
                 content_id
             ))
@@ -307,7 +329,7 @@ class ContentManager:
             cursor = conn.cursor()
             cursor.execute('''
                 SELECT id, title, content, author, update_date, create_date, url, source, 
-                       tags, knowledge_points, summary
+                       tags, knowledge_points, short_summary, long_summary
                 FROM content
             ''')
             rows = cursor.fetchall()
@@ -324,7 +346,8 @@ class ContentManager:
                     "source": row[7],
                     "tags": json.loads(row[8]) if row[8] else [],
                     "knowledge_points": json.loads(row[9]) if row[9] else [],
-                    "summary": row[10]
+                    "short_summary": row[10] or "",
+                    "long_summary": row[11] or "",
                 })
             return results
     

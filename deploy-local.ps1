@@ -139,7 +139,7 @@ Write-Host "=============================" -ForegroundColor Cyan
 Write-Host ""
 
 Write-Host "[信息] 同步虚拟环境和依赖 (uv sync)..." -ForegroundColor Yellow
-uv sync
+uv sync --inexact
 if (-not $?) {
     Write-Host "[错误] 同步依赖失败" -ForegroundColor Red
     Read-Host "按 Enter 退出"
@@ -199,6 +199,12 @@ $logDir = Join-Path $ScriptDir "logs"
 if (-not (Test-Path $logDir)) {
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
 }
+
+# 设置虚拟环境
+$venvPath = Join-Path $ScriptDir ".venv"
+$venvScripts = Join-Path $venvPath "Scripts"
+$env:VIRTUAL_ENV = $venvPath
+$env:PATH = "$venvScripts;$env:PATH"
 
 Write-Host "[信息] 启动后端服务 (端口: $backendPort)..." -ForegroundColor Yellow
 Write-Host ""

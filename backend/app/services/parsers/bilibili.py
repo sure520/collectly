@@ -50,5 +50,6 @@ class BilibiliParser(BaseParser):
             source="B站",
             tags=[],
             knowledge_points=[],
-            summary="B站视频内容"
+            short_summary="B站视频内容",
+            long_summary="B站视频内容",
         )

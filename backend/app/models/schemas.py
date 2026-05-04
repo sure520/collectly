@@ -17,7 +17,8 @@ class ContentResponse(BaseModel):
     source: str = Field(..., description="来源平台")
     tags: List[str] = Field(default_factory=list, description="标签")
     knowledge_points: List[str] = Field(default_factory=list, description="知识点")
-    summary: str = Field(default="", description="摘要")
+    short_summary: str = Field(default="", description="短摘要（~200字，卡片展示）")
+    long_summary: str = Field(default="", description="长摘要（~500-800字，详情展示）")
 
 # 搜索查询模型
 class SearchQuery(BaseModel):
@@ -37,7 +38,8 @@ class SearchQuery(BaseModel):
 class SearchResult(BaseModel):
     content_id: str = Field(..., description="内容ID")
     title: str = Field(..., description="标题")
-    summary: str = Field(..., description="摘要")
+    short_summary: str = Field(default="", description="短摘要")
+    long_summary: str = Field(default="", description="长摘要")
     author: str = Field(..., description="作者")
     source: str = Field(..., description="来源平台")
     url: str = Field(..., description="原文链接")

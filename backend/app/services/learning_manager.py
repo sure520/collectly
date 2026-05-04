@@ -130,7 +130,7 @@ class LearningManager:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                SELECT c.id, c.title, c.summary, c.author, c.source, c.update_date, c.create_date
+                SELECT c.id, c.title, c.short_summary, c.long_summary, c.author, c.source, c.update_date, c.create_date
                 FROM content c
                 JOIN learning_status ls ON c.id = ls.content_id
                 WHERE ls.status = ?
@@ -142,11 +142,12 @@ class LearningManager:
                 results.append({
                     "id": row[0],
                     "title": row[1],
-                    "summary": row[2],
-                    "author": row[3],
-                    "source": row[4],
-                    "update": row[5],
-                    "create_time": row[6]
+                    "short_summary": row[2] or "",
+                    "long_summary": row[3] or "",
+                    "author": row[4],
+                    "source": row[5],
+                    "update": row[6],
+                    "create_time": row[7]
                 })
             return results
     
@@ -155,7 +156,7 @@ class LearningManager:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                SELECT id, title, summary, author, source, update_date, create_date
+                SELECT id, title, short_summary, long_summary, author, source, update_date, create_date
                 FROM content
                 WHERE tags LIKE ?
                 ORDER BY create_date DESC
@@ -166,10 +167,11 @@ class LearningManager:
                 results.append({
                     "id": row[0],
                     "title": row[1],
-                    "summary": row[2],
-                    "author": row[3],
-                    "source": row[4],
-                    "update": row[5],
-                    "create_time": row[6]
+                    "short_summary": row[2] or "",
+                    "long_summary": row[3] or "",
+                    "author": row[4],
+                    "source": row[5],
+                    "update": row[6],
+                    "create_time": row[7]
                 })
             return results

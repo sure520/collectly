@@ -70,7 +70,8 @@ async def parse_links(links: List[LinkInput]):
                 "source": "",
                 "tags": [],
                 "knowledge_points": [],
-                "summary": ""
+                "short_summary": "",
+                "long_summary": "",
             })
     return results
 
@@ -229,7 +230,8 @@ async def rebuild_all_vectors():
                 source=content["source"],
                 tags=content["tags"],
                 knowledge_points=content["knowledge_points"],
-                summary=content["summary"]
+                short_summary=content.get("short_summary", ""),
+                long_summary=content.get("long_summary", ""),
             )
             embedding_text = content_manager._build_embedding_text(content_obj)
             metadata = {
@@ -265,7 +267,7 @@ async def get_app_settings():
     return AppSettings(
         tikhub_api_key=cfg.TIKHUB_API_KEY,
         dashscope_api_key=cfg.DASHSCOPE_API_KEY,
-        llm_model_name=cfg.LLM_MODEL_NAME or "qwen3.5-plus",
+        llm_model_name=cfg.LLM_MODEL_NAME or "qwen-plus",
         asr_model_name=cfg.ASR_MODEL_NAME or "qwen3-asr-flash",
         vision_model_name=cfg.VISION_MODEL_NAME or "qwen3-vl-flash",
         embedding_model=cfg.EMBEDDING_MODEL or "text-embedding-v4",
@@ -288,7 +290,7 @@ async def save_app_settings(body: AppSettings):
         return AppSettings(
             tikhub_api_key=cfg.TIKHUB_API_KEY,
             dashscope_api_key=cfg.DASHSCOPE_API_KEY,
-            llm_model_name=cfg.LLM_MODEL_NAME or "qwen3.5-plus",
+            llm_model_name=cfg.LLM_MODEL_NAME or "qwen-plus",
             asr_model_name=cfg.ASR_MODEL_NAME or "qwen3-asr-flash",
             vision_model_name=cfg.VISION_MODEL_NAME or "qwen3-vl-flash",
             embedding_model=cfg.EMBEDDING_MODEL or "text-embedding-v4",

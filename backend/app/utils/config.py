@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     DASHSCOPE_API_KEY: str = os.getenv("DASHSCOPE_API_KEY", "")
 
-    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "qwen3.5-plus")
+    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "qwen-plus")
     ASR_MODEL_NAME: str = os.getenv("ASR_MODEL_NAME", "qwen3-asr-flash")
     VISION_MODEL_NAME: str = os.getenv("VISION_MODEL_NAME", "qwen3-vl-flash")
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "text-embedding-v4")

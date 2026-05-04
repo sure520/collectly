@@ -52,7 +52,7 @@ class LLMService:
         if not self.api_key:
             raise LLMServiceError("DashScope API Key 未配置")
         
-        self.LLM_MODEL_NAME = cfg.LLM_MODEL_NAME or "qwen3.5-plus"
+        self.LLM_MODEL_NAME = cfg.LLM_MODEL_NAME or "qwen-plus"
         self.ASR_MODEL_NAME = cfg.ASR_MODEL_NAME or "qwen3-asr-flash"
         
         dashscope.api_key = self.api_key
@@ -93,6 +93,29 @@ class LLMService:
             构建好的提示词
         """
         prompts = {
+            "short_summary": f"""请用 150-200 字概括以下内容的核心要点：
+
+{content}
+
+要求：
+1. 精炼、突出最关键结论
+2. 适合卡片快速浏览
+3. 保持逻辑连贯
+
+请直接输出摘要内容，不要添加其他说明。""",
+
+            "long_summary": f"""请用 500-800 字详细总结以下内容：
+
+{content}
+
+要求：
+1. 覆盖核心论点、关键细节和结论
+2. 逻辑清晰，分段叙述
+3. 保留重要的技术细节和数据
+4. 语言流畅自然
+
+请直接输出摘要内容，不要添加其他说明。""",
+
             "summary": f"""请为以下内容生成一个简洁的摘要（200 字以内）：
 
 {content}
@@ -182,8 +205,11 @@ class LLMService:
                 points = [line.strip() for line in text.split("\n") if line.strip()]
                 return points[:10]
             
+            elif task_type in ("short_summary", "long_summary", "summary"):
+                return text
+
             else:
-                return text[:200]
+                return text
                 
         except LLMServiceError:
             raise
@@ -225,7 +251,7 @@ class LLMService:
                 messages=messages,
                 result_format='message',
                 temperature=0.7,
-                max_tokens=500
+                max_tokens=1500
             )
             
             elapsed_time = time.time() - start_time
@@ -316,6 +342,64 @@ class LLMService:
             logger.error(f"生成摘要失败：{str(e)}")
             raise LLMServiceError(f"生成摘要失败：{str(e)}", error_code="GENERATE_SUMMARY_ERROR")
     
+    def generate_short_summary(self, content: str, timeout: int = DEFAULT_TIMEOUT) -> str:
+        """
+        使用 LLM 生成短摘要（~200字，适合卡片展示）
+
+        Args:
+            content: 原始内容
+            timeout: 超时时间（秒）
+
+        Returns:
+            短摘要
+
+        Raises:
+            LLMServiceValidationError: 输入校验失败
+            LLMServiceTimeout: API 超时
+            LLMServiceError: 其他错误
+        """
+        self._validate_input(content)
+        prompt = self._build_prompt("short_summary", content)
+
+        try:
+            response = self._request_with_retry(prompt, timeout)
+            short_summary = self._parse_response(response, "short_summary")
+            return short_summary
+        except (LLMServiceTimeout, LLMServiceError):
+            raise
+        except Exception as e:
+            logger.error(f"生成短摘要失败：{str(e)}")
+            raise LLMServiceError(f"生成短摘要失败：{str(e)}", error_code="GENERATE_SHORT_SUMMARY_ERROR")
+
+    def generate_long_summary(self, content: str, timeout: int = DEFAULT_TIMEOUT) -> str:
+        """
+        使用 LLM 生成长摘要（~500-800字，适合详情展示）
+
+        Args:
+            content: 原始内容
+            timeout: 超时时间（秒）
+
+        Returns:
+            长摘要
+
+        Raises:
+            LLMServiceValidationError: 输入校验失败
+            LLMServiceTimeout: API 超时
+            LLMServiceError: 其他错误
+        """
+        self._validate_input(content)
+        prompt = self._build_prompt("long_summary", content)
+
+        try:
+            response = self._request_with_retry(prompt, timeout)
+            long_summary = self._parse_response(response, "long_summary")
+            return long_summary
+        except (LLMServiceTimeout, LLMServiceError):
+            raise
+        except Exception as e:
+            logger.error(f"生成长摘要失败：{str(e)}")
+            raise LLMServiceError(f"生成长摘要失败：{str(e)}", error_code="GENERATE_LONG_SUMMARY_ERROR")
+
     def generate_tags(self, content: str, timeout: int = DEFAULT_TIMEOUT) -> List[str]:
         """
         使用 LLM 生成关联标签
@@ -530,35 +614,64 @@ class LLMService:
         self,
         content: str,
         timeout: int = DEFAULT_TIMEOUT,
-        include_summary: bool = True,
+        include_short_summary: bool = True,
+        include_long_summary: bool = True,
         include_tags: bool = True,
         include_knowledge_points: bool = True
     ) -> Dict[str, Any]:
         """
-        综合处理内容（串行调用多个 LLM 任务）
-        
+        综合处理内容（并发生成短摘要和长摘要）
+
         Args:
             content: 原始内容
             timeout: 单个任务的超时时间
-            include_summary: 是否生成摘要
+            include_short_summary: 是否生成短摘要
+            include_long_summary: 是否生成长摘要
             include_tags: 是否生成标签
             include_knowledge_points: 是否提取知识点
-            
+
         Returns:
             包含各项结果的字典
         """
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
         self._validate_input(content)
-        
+
         results = {}
-        
-        if include_summary:
-            try:
-                results["summary"] = self.generate_summary(content, timeout)
-            except LLMServiceError as e:
-                logger.error(f"摘要生成失败：{str(e)}")
-                results["summary"] = None
-                results["summary_error"] = str(e)
-        
+
+        if include_short_summary and include_long_summary:
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                short_future = executor.submit(self.generate_short_summary, content, timeout)
+                long_future = executor.submit(self.generate_long_summary, content, timeout)
+
+                futures = {
+                    short_future: "short_summary",
+                    long_future: "long_summary",
+                }
+                for future in as_completed(futures):
+                    key = futures[future]
+                    try:
+                        results[key] = future.result()
+                    except LLMServiceError as e:
+                        logger.error(f"{key}生成失败：{str(e)}")
+                        results[key] = None
+                        results[f"{key}_error"] = str(e)
+        else:
+            if include_short_summary:
+                try:
+                    results["short_summary"] = self.generate_short_summary(content, timeout)
+                except LLMServiceError as e:
+                    logger.error(f"短摘要生成失败：{str(e)}")
+                    results["short_summary"] = None
+                    results["short_summary_error"] = str(e)
+            if include_long_summary:
+                try:
+                    results["long_summary"] = self.generate_long_summary(content, timeout)
+                except LLMServiceError as e:
+                    logger.error(f"长摘要生成失败：{str(e)}")
+                    results["long_summary"] = None
+                    results["long_summary_error"] = str(e)
+
         if include_tags:
             try:
                 results["tags"] = self.generate_tags(content, timeout)
@@ -566,7 +679,7 @@ class LLMService:
                 logger.error(f"标签生成失败：{str(e)}")
                 results["tags"] = None
                 results["tags_error"] = str(e)
-        
+
         if include_knowledge_points:
             try:
                 results["knowledge_points"] = self.extract_knowledge_points(content, timeout)
@@ -574,7 +687,7 @@ class LLMService:
                 logger.error(f"知识点提取失败：{str(e)}")
                 results["knowledge_points"] = None
                 results["knowledge_points_error"] = str(e)
-        
+
         return results
 
 

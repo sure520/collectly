@@ -14,7 +14,7 @@ export function Settings() {
   const [form, setForm] = useState<AppSettings>({
     tikhub_api_key: '',
     dashscope_api_key: '',
-    llm_model_name: 'qwen3.5-plus',
+    llm_model_name: 'qwen-plus',
     asr_model_name: 'qwen3-asr-flash',
     vision_model_name: 'qwen3-vl-flash',
     embedding_model: 'text-embedding-v4',

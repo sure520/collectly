@@ -145,14 +145,14 @@ class SimpleTester:
                 "AI Agent",
                 use_semantic=False
             )
-            print(f"  ✓ 关键词搜索: 返回 {len(keyword_results)} 条结果")
+            print(f"  ✓ 关键词搜索: 返回 {len(keyword_results.items)} 条结果")
             
             # 测试语义搜索
             semantic_results = await se.search(
                 "RAG 向量数据库",
                 use_semantic=True
             )
-            print(f"  ✓ 语义搜索: 返回 {len(semantic_results)} 条结果")
+            print(f"  ✓ 语义搜索: 返回 {len(semantic_results.items)} 条结果")
             
             # 测试多维度筛选
             filtered_results = await se.search(
@@ -160,17 +160,19 @@ class SimpleTester:
                 domains=["AI"],
                 learning_status="未读"
             )
-            print(f"  ✓ 筛选搜索: 返回 {len(filtered_results)} 条结果")
+            print(f"  ✓ 筛选搜索: 返回 {len(filtered_results.items)} 条结果")
             
             # 展示搜索结果质量
-            if semantic_results:
-                print(f"    最高相关度: {semantic_results[0].relevance_score}")
+            if semantic_results.items:
+                print(f"    最高相关度: {semantic_results.items[0].relevance_score}")
+                print(f"    短摘要: {semantic_results.items[0].short_summary[:50] if semantic_results.items[0].short_summary else '(空)'}...")
+                print(f"    长摘要: {semantic_results.items[0].long_summary[:50] if semantic_results.items[0].long_summary else '(空)'}...")
             
             self.results["tests"].append({
                 "name": "搜索引擎",
                 "success": True,
-                "keyword_count": len(keyword_results),
-                "semantic_count": len(semantic_results)
+                "keyword_count": len(keyword_results.items),
+                "semantic_count": len(semantic_results.items)
             })
             return True
             

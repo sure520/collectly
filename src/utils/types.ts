@@ -14,7 +14,8 @@ export interface ContentResponse {
   source: string;
   tags: string[];
   knowledge_points: string[];
-  summary: string;
+  short_summary: string;
+  long_summary: string;
 }
 
 // 搜索查询类型
@@ -45,7 +46,8 @@ export interface PaginatedSearchResult {
 export interface SearchResult {
   content_id: string;
   title: string;
-  summary: string;
+  short_summary: string;
+  long_summary: string;
   author: string;
   source: string;
   url: string;

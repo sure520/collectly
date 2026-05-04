@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone, timedelta
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from app.utils.config import get_settings
 from app.utils.logger import get_logger
 from app.models.schemas import ContentResponse
@@ -22,7 +23,7 @@ class BaseParser(ABC):
 
     def _build_response(self, url: str, source: str, title: str, content: str,
                         author: str, create_time: datetime) -> ContentResponse:
-        summary = self._generate_summary(content)
+        short_summary, long_summary = self._generate_summaries(content)
         tags = self._generate_tags(content)
         knowledge_points = self._extract_knowledge_points(content)
 
@@ -36,31 +37,65 @@ class BaseParser(ABC):
             source=source,
             tags=tags,
             knowledge_points=knowledge_points,
-            summary=summary
+            short_summary=short_summary,
+            long_summary=long_summary,
         )
 
-    def _generate_summary(self, content: str) -> str:
+    def _generate_summaries(self, content: str) -> tuple:
+        if not content:
+            return "", ""
+        content_truncated = content[:10000] if len(content) > 10000 else content
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            short_future = executor.submit(self._generate_short_summary, content_truncated)
+            long_future = executor.submit(self._generate_long_summary, content_truncated)
+
+            futures = {short_future: "short", long_future: "long"}
+            results = {"short": "", "long": ""}
+            for future in as_completed(futures):
+                key = futures[future]
+                try:
+                    results[key] = future.result()
+                except Exception:
+                    results[key] = ""
+            return results["short"], results["long"]
+
+    def _generate_short_summary(self, content: str) -> str:
         if not content:
             return ""
         try:
-            logger.info("开始使用 LLM 生成摘要")
-            content_truncated = content[:8000] if len(content) > 8000 else content
-            summary = llm_service.generate_summary(content_truncated)
-            logger.info(f"LLM 摘要生成成功，长度：{len(summary)}")
-            return summary
+            logger.info("开始使用 LLM 生成短摘要")
+            short_summary = llm_service.generate_short_summary(content)
+            logger.info(f"LLM 短摘要生成成功，长度：{len(short_summary)}")
+            return short_summary
         except LLMServiceError as e:
-            logger.warning(f"LLM 摘要生成失败，使用备用方案：{str(e)}")
+            logger.warning(f"LLM 短摘要生成失败，使用备用方案：{str(e)}")
             return content[:200] + "..." if len(content) > 200 else content
         except Exception as e:
-            logger.error(f"摘要生成异常：{str(e)}")
+            logger.error(f"短摘要生成异常：{str(e)}")
             return content[:200] + "..." if len(content) > 200 else content
+
+    def _generate_long_summary(self, content: str) -> str:
+        if not content:
+            return ""
+        try:
+            logger.info("开始使用 LLM 生成长摘要")
+            long_summary = llm_service.generate_long_summary(content)
+            logger.info(f"LLM 长摘要生成成功，长度：{len(long_summary)}")
+            return long_summary
+        except LLMServiceError as e:
+            logger.warning(f"LLM 长摘要生成失败，使用备用方案：{str(e)}")
+            return content[:500] + "..." if len(content) > 500 else content
+        except Exception as e:
+            logger.error(f"长摘要生成异常：{str(e)}")
+            return content[:500] + "..." if len(content) > 500 else content
 
     def _generate_tags(self, content: str) -> list:
         if not content:
             return []
         try:
             logger.info("开始使用 LLM 生成标签")
-            content_truncated = content[:8000] if len(content) > 8000 else content
+            content_truncated = content[:10000] if len(content) > 10000 else content
             tags = llm_service.generate_tags(content_truncated)
             logger.info(f"LLM 标签生成成功，数量：{len(tags)}")
             return tags
@@ -92,7 +127,7 @@ class BaseParser(ABC):
             return []
         try:
             logger.info("开始使用 LLM 提取知识点")
-            content_truncated = content[:8000] if len(content) > 8000 else content
+            content_truncated = content[:10000] if len(content) > 10000 else content
             knowledge_points = llm_service.extract_knowledge_points(content_truncated)
             logger.info(f"LLM 知识点提取成功，数量：{len(knowledge_points)}")
             return knowledge_points

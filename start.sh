@@ -47,7 +47,11 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 
 echo -e "${YELLOW}[信息] 同步 Python 依赖 (uv sync)...${NC}"
-uv sync
+uv sync --inexact
+if [ $? -ne 0 ]; then
+    echo -e "${RED}[错误] 同步依赖失败${NC}"
+    exit 1
+fi
 echo -e "${GREEN}[完成] 依赖同步完成${NC}"
 
 LOG_DIR="$SCRIPT_DIR/logs"
@@ -60,6 +64,10 @@ if grep -q "^BACKEND_PORT=" "$ENV_FILE" 2>/dev/null; then
     BACKEND_PORT=$(grep "^BACKEND_PORT=" "$ENV_FILE" | cut -d'=' -f2 | tr -d '[:space:]')
 fi
 [ -z "$BACKEND_PORT" ] && BACKEND_PORT="8000"
+
+VENV_PATH="$SCRIPT_DIR/.venv"
+export VIRTUAL_ENV="$VENV_PATH"
+export PATH="$VENV_PATH/bin:$PATH"
 
 echo ""
 echo -e "${YELLOW}[信息] 启动后端服务...${NC}"

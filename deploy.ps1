@@ -131,7 +131,7 @@ if (-not $SkipBackend) {
     Set-Location $ProjectRoot
 
     Write-Host "  - 同步虚拟环境和依赖 (uv sync)..."
-    uv sync
+    uv sync --inexact
     if (-not $?) {
         Write-Color Red "  ✗ 同步依赖失败"
         exit 1
@@ -201,12 +201,20 @@ if (-not (Test-Path $logDir)) {
 Write-Host "  - 后端服务端口：$backendPort"
 Write-Host "  - 日志目录：$logDir"
 
+# 设置虚拟环境
+$venvPath = Join-Path $ProjectRoot ".venv"
+$venvScripts = Join-Path $venvPath "Scripts"
+$env:VIRTUAL_ENV = $venvPath
+$env:PATH = "$venvScripts;$env:PATH"
+
 # 启动后端（后台运行）
 $backendJob = Start-Job -ScriptBlock {
-    param($projectRoot, $backendPort)
+    param($projectRoot, $backendPort, $venvPath, $venvScripts)
+    $env:VIRTUAL_ENV = $venvPath
+    $env:PATH = "$venvScripts;$env:PATH"
     Set-Location $projectRoot
     uv run uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --log-level info
-} -ArgumentList $ProjectRoot, $backendPort
+} -ArgumentList $ProjectRoot, $backendPort, $venvPath, $venvScripts
 
 Write-Color Green "  ✓ 后端服务已启动（后台运行）"
 Write-Host ""
