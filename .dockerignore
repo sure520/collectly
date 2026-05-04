@@ -10,5 +10,5 @@ dist/
 .idea/
 logs/
 data/
-chroma_db/
+chroma_data/
 *.log

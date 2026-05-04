@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ --trus
 COPY backend/ ./backend/
 
 # 创建数据目录
-RUN mkdir -p /app/data /app/logs /app/chroma_db
+RUN mkdir -p /app/data /app/logs
 
 # 暴露端口
 EXPOSE 8000

@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     EMBEDDING_API_KEY: str = os.getenv("EMBEDDING_API_KEY", "")
     EMBEDDING_API_ENDPOINT: str = os.getenv("EMBEDDING_API_ENDPOINT", "")
 
-    DATABASE_URL: str = f"sqlite:///{PROJECT_ROOT / 'knowledge.db'}"
+    DATABASE_URL: str = f"sqlite:///{PROJECT_ROOT / 'data' / 'knowledge.db'}"
 
     APP_NAME: str = "AI 知识收藏与检索管家"
     DEBUG: bool = True
