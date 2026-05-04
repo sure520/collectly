@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
@@ -11,10 +11,45 @@ import { DetailModal } from './components/DetailModal';
 import { Stats } from './components/Stats';
 import { Settings } from './components/Settings';
 import { Pagination } from './components/Pagination';
+import { Login } from './components/Login';
 import { useKnowledge } from './hooks/useKnowledge';
+import { isAuthenticated, setToken, clearToken } from './utils/auth';
+import { setOnUnauthorizedHandler } from './utils/api';
 import type { KnowledgeItem, SearchFilters, LearningStatus } from './types';
 
 function AppContent() {
+  const navigate = useNavigate();
+  const [authenticated, setAuthenticated] = useState(() => isAuthenticated());
+
+  const handleUnauthorized = useCallback(() => {
+    setAuthenticated(false);
+  }, []);
+
+  useEffect(() => {
+    setOnUnauthorizedHandler(handleUnauthorized);
+    return () => setOnUnauthorizedHandler(() => {});
+  }, [handleUnauthorized]);
+
+  const handleLoginSuccess = useCallback((token: string, expiresIn: number) => {
+    setToken(token, expiresIn);
+    setAuthenticated(true);
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    clearToken();
+    setAuthenticated(false);
+  }, []);
+
+  if (!authenticated) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  return (
+    <AuthenticatedApp onLogout={handleLogout} />
+  );
+}
+
+function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
   const navigate = useNavigate();
   const {
     items, stats, loading, parseError,
@@ -104,7 +139,7 @@ function AppContent() {
   const displayItems = isSemanticSearch && searchQuery ? searchResults : items;
 
   return (
-    <Layout>
+    <Layout onLogout={onLogout}>
       <Routes>
         <Route
           path="/"

@@ -6,7 +6,7 @@ import type { KnowledgeItem, SearchFilters, UserStats, Platform, Domain, Difficu
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
-export function useKnowledge(userId: string | undefined) {
+export function useKnowledge(userId?: string) {
   const [items, setItems] = useState<KnowledgeItem[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(false);

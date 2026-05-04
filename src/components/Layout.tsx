@@ -8,11 +8,14 @@ import {
   Settings,
   Menu,
   X,
+  LogOut,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { isAuthenticated } from '../utils/auth';
 
 interface LayoutProps {
   children: React.ReactNode;
+  onLogout?: () => void;
 }
 
 const navItems = [
@@ -23,7 +26,7 @@ const navItems = [
   { path: '/settings', icon: Settings, label: '设置' },
 ];
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, onLogout }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -75,6 +78,16 @@ export function Layout({ children }: LayoutProps) {
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">单用户模式</p>
             </div>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="ml-auto inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                title="退出登录"
+              >
+                <LogOut size={14} />
+                退出
+              </button>
+            )}
           </div>
         </div>
       </aside>
@@ -146,6 +159,16 @@ export function Layout({ children }: LayoutProps) {
                       个人知识库
                     </p>
                   </div>
+                  {onLogout && (
+                    <button
+                      onClick={onLogout}
+                      className="ml-auto inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                      title="退出登录"
+                    >
+                      <LogOut size={14} />
+                      退出
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.aside>

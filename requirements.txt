@@ -9,3 +9,5 @@ numpy
 dashscope
 chromadb
 mutagen
+python-jose[cryptography]
+bcrypt
