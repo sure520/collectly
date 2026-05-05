@@ -124,3 +124,4 @@ backend/chroma_data/
 *.bin
 .trae/
 data/
+*demo*

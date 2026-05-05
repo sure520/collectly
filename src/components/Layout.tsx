@@ -37,69 +37,57 @@ export function Layout({ children, onLogout }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#12121a] to-[#0a0a0f] flex relative overflow-hidden">
-      <div className="fixed inset-0 bg-gradient-ambient pointer-events-none" />
-      <div className="fixed top-20 left-10 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl animate-float pointer-events-none" />
-      <div className="fixed bottom-20 right-20 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-float pointer-events-none" style={{ animationDelay: '-3s' }} />
-
-      <aside className="hidden lg:flex flex-col w-72 h-screen fixed left-0 top-0 z-10 border-r border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-        <div className="p-6 pt-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Sparkles size={20} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-white">Collectly</h1>
-              <p className="text-xs text-gray-500">AI 知识管家</p>
-            </div>
-          </div>
-
-          <nav className="space-y-1">
-            {navItems.map((item, index) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <motion.button
-                  key={item.path}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  onClick={() => handleNavClick(item.path)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                    isActive
-                      ? 'bg-white/8 text-white shadow-lg shadow-blue-500/10'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute left-0 w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                  <item.icon size={18} className={isActive ? 'text-blue-400' : 'group-hover:text-white transition-colors'} />
-                  {item.label}
-                </motion.button>
-              );
-            })}
-          </nav>
+    <div className="min-h-screen flex" style={{ backgroundColor: 'var(--bg)' }}>
+      <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 h-screen z-10" style={{ backgroundColor: 'var(--surface)', borderRight: '1px solid var(--border-light)' }}>
+        <div className="p-6 pt-8 pb-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
+          <h1 className="serif text-2xl font-bold" style={{ color: 'var(--text)', letterSpacing: '-0.5px' }}>
+            Collect<span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>ly</span>
+          </h1>
+          <p className="text-xs font-semibold uppercase tracking-widest mt-1" style={{ color: 'var(--text-light)' }}>
+            Your knowledge, curated
+          </p>
         </div>
 
-        <div className="mt-auto p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-purple-500/20">
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {navItems.map((item, index) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <motion.button
+                key={item.path}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                onClick={() => handleNavClick(item.path)}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-all"
+                style={{
+                  color: isActive ? 'var(--text)' : 'var(--text-mid)',
+                  backgroundColor: isActive ? 'var(--surface2)' : 'transparent',
+                  fontWeight: isActive ? 600 : 500,
+                }}
+              >
+                <item.icon size={18} style={{ opacity: isActive ? 1 : 0.5 }} />
+                {item.label}
+              </motion.button>
+            );
+          })}
+        </nav>
+
+        <div className="p-4" style={{ borderTop: '1px solid var(--border-light)' }}>
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-dark))' }}>
               我
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white">
-                个人知识库
-              </p>
-              <p className="text-xs text-gray-500">单用户模式</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>个人知识库</p>
+              <p className="text-xs" style={{ color: 'var(--text-light)' }}>单用户模式</p>
             </div>
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="ml-auto p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                className="p-1.5 rounded-lg transition-colors"
+                style={{ color: 'var(--text-light)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-light)')}
                 title="退出登录"
               >
                 <LogOut size={16} />
@@ -109,18 +97,18 @@ export function Layout({ children, onLogout }: LayoutProps) {
         </div>
       </aside>
 
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-white/5 z-20 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 z-20 flex items-center justify-between px-4" style={{ backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border-light)' }}>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <Sparkles size={16} className="text-white" />
-          </div>
-          <span className="text-lg font-bold text-white">Collectly</span>
+          <span className="serif text-xl font-bold" style={{ color: 'var(--text)' }}>
+            Collect<span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>ly</span>
+          </span>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 text-gray-400 hover:text-white transition-colors"
+          className="p-2 rounded-lg"
+          style={{ color: 'var(--text-mid)' }}
         >
-          {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
@@ -132,57 +120,58 @@ export function Layout({ children, onLogout }: LayoutProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/60 z-30 backdrop-blur-sm"
+              className="lg:hidden fixed inset-0 z-30"
+              style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}
             />
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="lg:hidden fixed left-0 top-0 bottom-0 w-72 bg-[#0a0a0f] z-40 flex flex-col border-r border-white/5"
+              className="lg:hidden fixed left-0 top-0 bottom-0 w-64 z-40 flex flex-col"
+              style={{ backgroundColor: 'var(--surface)', borderRight: '1px solid var(--border-light)' }}
             >
-              <div className="p-6 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                    <Sparkles size={16} className="text-white" />
-                  </div>
-                  <h1 className="text-lg font-bold text-white">Collectly</h1>
-                </div>
-                <button onClick={() => setSidebarOpen(false)} className="p-2 text-gray-400 hover:text-white">
+              <div className="p-5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-light)' }}>
+                <span className="serif text-xl font-bold" style={{ color: 'var(--text)' }}>
+                  Collect<span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>ly</span>
+                </span>
+                <button onClick={() => setSidebarOpen(false)} className="p-1.5" style={{ color: 'var(--text-mid)' }}>
                   <X size={20} />
                 </button>
               </div>
-              <nav className="flex-1 px-4 space-y-1">
+              <nav className="flex-1 px-3 py-4 space-y-1">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
                     <button
                       key={item.path}
                       onClick={() => handleNavClick(item.path)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                        isActive
-                          ? 'bg-white/8 text-white'
-                          : 'text-gray-400 hover:text-white hover:bg-white/5'
-                      }`}
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all"
+                      style={{
+                        color: isActive ? 'var(--text)' : 'var(--text-mid)',
+                        backgroundColor: isActive ? 'var(--surface2)' : 'transparent',
+                        fontWeight: isActive ? 600 : 500,
+                      }}
                     >
-                      <item.icon size={18} className={isActive ? 'text-blue-400' : ''} />
+                      <item.icon size={18} style={{ opacity: isActive ? 1 : 0.5 }} />
                       {item.label}
                     </button>
                   );
                 })}
               </nav>
-              <div className="p-4 border-t border-white/5">
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+              <div className="p-4" style={{ borderTop: '1px solid var(--border-light)' }}>
+                <div className="flex items-center gap-3 px-2">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-dark))' }}>
                     我
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">个人知识库</p>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>个人知识库</p>
                   </div>
                   {onLogout && (
                     <button
                       onClick={onLogout}
-                      className="ml-auto p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                      className="p-1.5 rounded-lg"
+                      style={{ color: 'var(--text-light)' }}
                     >
                       <LogOut size={16} />
                     </button>
@@ -194,8 +183,8 @@ export function Layout({ children, onLogout }: LayoutProps) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 lg:ml-72 pt-16 lg:pt-0 min-h-screen overflow-x-hidden relative z-0">
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 min-h-screen">
+        <div className="p-5 sm:p-8 lg:p-12 max-w-6xl mx-auto">
           {children}
         </div>
       </main>

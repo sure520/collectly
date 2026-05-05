@@ -9,7 +9,7 @@ import Search from './components/Search';
 import FilterPanel from './components/FilterPanel';
 import { DetailModal } from './components/DetailModal';
 import { Stats } from './components/Stats';
-import { Settings } from './components/Settings';
+import Settings from './components/Settings';
 import { Pagination } from './components/Pagination';
 import { Login } from './components/Login';
 import { useKnowledge } from './hooks/useKnowledge';

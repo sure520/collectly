@@ -21,7 +21,6 @@ export function Pagination({ page, pageSize, total, totalPages, onPageChange, on
     }
 
     pages.push(1);
-
     if (page > 3) pages.push('...');
 
     const start = Math.max(2, page - 1);
@@ -29,7 +28,6 @@ export function Pagination({ page, pageSize, total, totalPages, onPageChange, on
     for (let i = start; i <= end; i++) pages.push(i);
 
     if (page < totalPages - 2) pages.push('...');
-
     pages.push(totalPages);
 
     return pages;
@@ -41,16 +39,17 @@ export function Pagination({ page, pageSize, total, totalPages, onPageChange, on
   const endItem = Math.min(page * pageSize, total);
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 glass rounded-xl">
+    <div className="flex items-center justify-between px-5 py-3.5 rounded-xl" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border-light)' }}>
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-400">
+        <span className="text-sm font-medium" style={{ color: 'var(--text-mid)' }}>
           显示 {startItem}-{endItem} 条，共 {total} 条
         </span>
         {onPageSizeChange && (
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="text-sm px-3 py-1.5 rounded-xl border border-white/5 bg-white/5 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-sm px-3 py-1.5 rounded-xl font-medium"
+            style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border-light)', color: 'var(--text-mid)', outline: 'none' }}
           >
             <option value={10}>10 条/页</option>
             <option value={20}>20 条/页</option>
@@ -63,32 +62,34 @@ export function Pagination({ page, pageSize, total, totalPages, onPageChange, on
         <button
           onClick={() => onPageChange(1)}
           disabled={page === 1}
-          className="p-1.5 rounded-lg hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ color: 'var(--text-light)' }}
         >
-          <ChevronsLeft size={16} className="text-gray-400" />
+          <ChevronsLeft size={16} />
         </button>
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={page === 1}
-          className="p-1.5 rounded-lg hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ color: 'var(--text-light)' }}
         >
-          <ChevronLeft size={16} className="text-gray-400" />
+          <ChevronLeft size={16} />
         </button>
 
         {getVisiblePages().map((p, index) =>
           typeof p === 'string' ? (
-            <span key={`ellipsis-${index}`} className="px-2 text-sm text-gray-500">
+            <span key={`ellipsis-${index}`} className="px-2 text-sm font-medium" style={{ color: 'var(--text-light)' }}>
               {p}
             </span>
           ) : (
             <button
               key={p}
               onClick={() => onPageChange(p)}
-              className={`min-w-[32px] h-8 text-sm rounded-lg transition-all ${
-                p === page
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/20'
-                  : 'hover:bg-white/5 text-gray-400 hover:text-white'
-              }`}
+              className="min-w-[32px] h-8 text-sm rounded-lg transition-all font-semibold"
+              style={p === page
+                ? { backgroundColor: 'var(--accent)', color: 'white', boxShadow: '0 2px 8px rgba(212,133,106,0.3)' }
+                : { color: 'var(--text-mid)', backgroundColor: 'transparent' }
+              }
             >
               {p}
             </button>
@@ -98,16 +99,18 @@ export function Pagination({ page, pageSize, total, totalPages, onPageChange, on
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={page === totalPages}
-          className="p-1.5 rounded-lg hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ color: 'var(--text-light)' }}
         >
-          <ChevronRight size={16} className="text-gray-400" />
+          <ChevronRight size={16} />
         </button>
         <button
           onClick={() => onPageChange(totalPages)}
           disabled={page === totalPages}
-          className="p-1.5 rounded-lg hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ color: 'var(--text-light)' }}
         >
-          <ChevronsRight size={16} className="text-gray-400" />
+          <ChevronsRight size={16} />
         </button>
       </div>
     </div>
