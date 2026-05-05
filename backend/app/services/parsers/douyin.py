@@ -27,7 +27,7 @@ class DouyinParser(BaseParser):
                     raise ValueError(f"解析抖音链接失败 [错误码：{error_code}]: {error_msg}")
 
                 aweme_detail = data["data"]["aweme_detail"]
-                title = aweme_detail.get("caption", "抖音视频")
+                title = aweme_detail.get("caption") or "抖音图文"
                 author = aweme_detail.get("author", {}).get("nickname", "")
                 create_time = datetime.fromtimestamp(aweme_detail.get("create_time", 0))
 
@@ -37,6 +37,8 @@ class DouyinParser(BaseParser):
                     content = llm_service.speech_to_text(video_url)
                     if content:
                         break
+                if not content:
+                    content = aweme_detail.get("desc", "")
                 if not content:
                     content = title
 

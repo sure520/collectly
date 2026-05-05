@@ -1,10 +1,31 @@
 # Collectly - Your AI Knowledge Butler
 
-[English](README.md) | [中文](READMEzh.md)
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-0.104-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-5.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/ChromaDB-FF6B6B?style=for-the-badge&logo=chromadb&logoColor=white" alt="ChromaDB">
+  <img src="https://img.shields.io/badge/DashScope-FF6A00?style=for-the-badge&logo=alibabacloud&logoColor=white" alt="DashScope">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensource&logoColor=white" alt="License">
+</p>
+
+<p align="center">
+  <a href="READMEzh.md">中文</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#core-capabilities">Core Capabilities</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#api-reference">API Reference</a>
+</p>
 
 > **"Collect"** is just the beginning, **"Manage"** is the essence.
 
 Collectly is not just a content collector—it's your **intelligent knowledge butler** that transforms scattered information into systematic wisdom. With AI-powered management, your knowledge assets are organized, activated, and always at your fingertips.
+
+---
 
 ## What Makes Collectly Different?
 
@@ -12,28 +33,32 @@ Collectly is not just a content collector—it's your **intelligent knowledge bu
 
 Unlike traditional bookmarking tools that only **store**, Collectly **manages** your knowledge through:
 
-- **Lifecycle Management** - Content flows through stages: Unread → Reading → Key Points → Review Scheduled
-- **Intelligent Categorization** - AI automatically tags, summarizes, and extracts knowledge points
-- **Active Recall System** - Smart reminders for content that needs review
-- **Learning Analytics** - Track your knowledge acquisition journey with detailed insights
+- **Lifecycle Management** — Content flows through stages: Unread → Reading → Key Points → Review Scheduled
+- **Intelligent Categorization** — AI automatically tags, summarizes, and extracts knowledge points
+- **Active Recall System** — Smart reminders for content that needs review
+- **Learning Analytics** — Track your knowledge acquisition journey with detailed insights
 
 ## Core Capabilities
 
 ### 1. Universal Content Capture
 Seamlessly ingest content from major Chinese platforms:
-- **Douyin (TikTok)** - Video-to-text extraction with speech recognition
-- **Xiaohongshu** - Lifestyle and product insights
-- **WeChat Articles** - Professional blogs and industry analysis
-- **Bilibili** - Educational videos with subtitle extraction
-- **Zhihu** - Expert Q&A and in-depth articles
-- **CSDN** - Technical tutorials and code solutions
+
+| Platform | Capability |
+|----------|-----------|
+| **Douyin (TikTok)** | Video-to-text extraction with speech recognition |
+| **Xiaohongshu** | Lifestyle and product insights |
+| **WeChat Articles** | Professional blogs and industry analysis |
+| **Bilibili** | Educational videos with subtitle extraction |
+| **Zhihu** | Expert Q&A and in-depth articles |
+| **CSDN** | Technical tutorials and code solutions |
 
 ### 2. AI-Powered Content Refinement
 Every piece of content is automatically processed:
-- **Smart Summarization** - Condensed 200-word summaries capturing essence
-- **Auto-Tagging** - 5-10 relevant tags across multiple dimensions (tech domain, application, concept)
-- **Knowledge Point Extraction** - Key concepts and takeaways identified
-- **Content Deduplication** - Intelligent hash-based duplicate detection
+
+- **Smart Summarization** — Condensed 200-word summaries capturing essence
+- **Auto-Tagging** — 5-10 relevant tags across multiple dimensions (tech domain, application, concept)
+- **Knowledge Point Extraction** — Key concepts and takeaways identified
+- **Content Deduplication** — Intelligent hash-based duplicate detection
 
 ### 3. Intelligent Knowledge Management
 
@@ -53,18 +78,19 @@ Every piece of content is automatically processed:
 
 ### 4. Smart Retrieval System
 Find exactly what you need:
-- **Full-Text Search** - Across titles, content, and summaries
-- **Multi-Filter Search** - Combine domain + source + status + date range
-- **Relevance Scoring** - AI-ranked search results
-- **Semantic Understanding** - Context-aware content discovery
+
+- **Full-Text Search** — Across titles, content, and summaries
+- **Multi-Filter Search** — Combine domain + source + status + date range
+- **Relevance Scoring** — AI-ranked search results
+- **Semantic Understanding** — Context-aware content discovery via vector embeddings
 
 ### 5. Personal Knowledge Base
-- **Custom Notes** - Add insights to any content
-- **Tag Management** - Create your own taxonomy
-- **Learning Statistics** - Visual progress tracking
-- **Content Collections** - Group related materials
+- **Custom Notes** — Add insights to any content
+- **Tag Management** — Create your own taxonomy
+- **Learning Statistics** — Visual progress tracking
+- **Content Collections** — Group related materials
 
-## Architecture Highlights
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -74,9 +100,24 @@ Find exactly what you need:
 │     ↓        ↓        ↓        ↓        ↓          ↓       │
 │  [URL]   [Platform]  [LLM]   [SQLite] [Status]   [Search]  │
 │          [API]       [AI]    [Dedup]  [Tags]     [Filter]  │
-│                      [Tags]          [Notes]               │
+│                      [Tags]   [VecDB]  [Notes]    [Vector] │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend Framework** | FastAPI (Python) |
+| **AI / LLM** | DashScope (Qwen-plus, Qwen3-ASR, Qwen3-VL) |
+| **Vector Database** | ChromaDB (local persistence) |
+| **Relational Database** | SQLite |
+| **Content Parsing** | TikHub API + BeautifulSoup + Trafilatura |
+| **Frontend** | React 18 + TypeScript + Tailwind CSS |
+| **UI Components** | Framer Motion, Lucide React, Recharts |
+| **Build Tool** | Webpack 5 |
+| **Containerization** | Docker / Docker Compose |
+| **Deployment** | Local + Tunnel / Cloud Server |
 
 ## Project Structure
 
@@ -91,7 +132,8 @@ collectly/
 │   │   │   ├── content_manager.py     # Storage & deduplication
 │   │   │   ├── search_engine.py       # Intelligent search
 │   │   │   ├── learning_manager.py    # Status & progress tracking
-│   │   │   └── llm_service.py         # DashScope AI integration
+│   │   │   ├── llm_service.py         # DashScope AI integration
+│   │   │   └── vector_service.py      # Vector embeddings & search
 │   │   └── utils/
 │   └── tests/
 │
@@ -101,7 +143,17 @@ collectly/
 │   ├── summarizer.py
 │   └── requirements.txt
 │
+├── src/                        # React frontend
+│   ├── components/             # UI components
+│   ├── hooks/                  # React hooks
+│   ├── utils/                  # Frontend utilities
+│   └── types/                  # TypeScript types
+│
+├── functions/                  # Supabase Edge Functions
+│
 ├── tests/                      # Platform-specific tests
+│
+├── .wiki/                      # Project documentation wiki
 │
 ├── start.bat                   # Windows CMD startup script
 ├── start.ps1                   # PowerShell startup script
@@ -120,10 +172,13 @@ collectly/
 ## Quick Start
 
 ### Prerequisites
-- [uv](https://docs.astral.sh/uv/) (Python package & virtual environment manager)
-- Node.js 16+ (frontend build)
-- TikHub API Key (platform access)
-- DashScope API Key (AI capabilities)
+
+| Dependency | Version | Purpose |
+|-----------|---------|---------|
+| [uv](https://docs.astral.sh/uv/) | Latest | Python package & virtual environment manager |
+| Node.js | 16+ | Frontend build |
+| TikHub API Key | — | Platform content access |
+| DashScope API Key | — | AI capabilities (LLM, ASR, Vision, Embedding) |
 
 **Install uv:**
 ```powershell
@@ -225,7 +280,6 @@ cp .env.example .env
 uv run uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Build and start frontend (Terminal 2)
-cd ..
 npm install
 npm run dev
 ```
@@ -237,6 +291,13 @@ Access URLs:
 
 ## API Reference
 
+### Authentication
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/status` | GET | Check if authentication is required |
+| `/api/auth/login` | POST | Login with access password |
+| `/api/auth/verify` | GET | Verify current token validity |
+
 ### Content Management
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -244,6 +305,7 @@ Access URLs:
 | `/api/parse-links` | POST | Batch parse URLs |
 | `/api/save-content` | POST | Save to knowledge base |
 | `/api/content/{id}` | GET | Retrieve content |
+| `/api/clean-urls` | POST | Clean and extract URLs from raw text |
 
 ### Knowledge Management
 | Endpoint | Method | Description |
@@ -268,9 +330,21 @@ TIKHUB_API_URL=https://api.tikhub.io
 # DashScope (Aliyun) LLM
 DASHSCOPE_API_KEY=your_key
 
+# Model Configuration
+LLM_MODEL_NAME=qwen-plus
+ASR_MODEL_NAME=qwen3-asr-flash
+VISION_MODEL_NAME=qwen3-vl-flash
+EMBEDDING_MODEL=text-embedding-v4
+
 # App Settings
 APP_NAME="Collectly - AI Knowledge Butler"
 DEBUG=false
+BACKEND_HOST=0.0.0.0
+BACKEND_PORT=8000
+
+# Access Control
+ACCESS_PASSWORD=your_password
+TOKEN_EXPIRE_HOURS=24
 ```
 
 ## The "Manage" Difference
@@ -283,6 +357,7 @@ DEBUG=false
 | Retention | Static | Learning status tracking |
 | Insights | None | Learning analytics |
 | Review | Manual | Scheduled recall system |
+| Search | Title only | Full-text + semantic vector search |
 
 ## Development
 
@@ -296,25 +371,18 @@ python tests/test_douyin.py
 python tests/test_zhihu.py
 ```
 
-## Tech Stack
-
-- **Framework**: FastAPI
-- **Database**: SQLite with custom schema
-- **AI/LLM**: DashScope (Qwen-plus)
-- **Parsing**: TikHub API + BeautifulSoup
-- **Speech-to-Text**: Qwen3-ASR
-- **Models**: Pydantic
-
 ## License
 
 MIT License
 
 ## Acknowledgments
 
-- [TikHub](https://api.tikhub.io) - Multi-platform content access
-- [DashScope](https://dashscope.aliyun.com) - LLM capabilities
-- [FastAPI](https://fastapi.tiangolo.com) - Web framework
+- [TikHub](https://api.tikhub.io) — Multi-platform content access
+- [DashScope](https://dashscope.aliyun.com) — LLM, ASR, Vision & Embedding capabilities
+- [FastAPI](https://fastapi.tiangolo.com) — Web framework
+- [ChromaDB](https://www.trychroma.com) — Vector database
+- [React](https://react.dev) — Frontend library
 
 ---
 
-> **Collectly** - Transform information overload into organized wisdom.
+> **Collectly** — Transform information overload into organized wisdom.

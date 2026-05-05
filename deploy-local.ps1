@@ -139,7 +139,7 @@ Write-Host "=============================" -ForegroundColor Cyan
 Write-Host ""
 
 Write-Host "[信息] 同步虚拟环境和依赖 (uv sync)..." -ForegroundColor Yellow
-uv sync --inexact
+uv sync
 if (-not $?) {
     Write-Host "[错误] 同步依赖失败" -ForegroundColor Red
     Read-Host "按 Enter 退出"
@@ -206,11 +206,14 @@ $venvScripts = Join-Path $venvPath "Scripts"
 $env:VIRTUAL_ENV = $venvPath
 $env:PATH = "$venvScripts;$env:PATH"
 
+$timestamp = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), "China Standard Time").ToString("yyyy-MM-dd_HHmmss")
+$logFile = Join-Path $logDir "backend_$timestamp.log"
 Write-Host "[信息] 启动后端服务 (端口: $backendPort)..." -ForegroundColor Yellow
+Write-Host "[信息] 日志文件: $logFile" -ForegroundColor Yellow
 Write-Host ""
 
-# 启动后端
-uv run uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --reload --log-level info
+# 启动后端（前台运行，同时输出到日志文件）
+uv run uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --reload --log-level info 2>&1 | Tee-Object -FilePath $logFile -Append
 
 Write-Host ""
 Write-Host "[完成] 后端服务已停止" -ForegroundColor Yellow

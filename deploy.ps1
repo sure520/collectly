@@ -1,4 +1,4 @@
-# ============================================
+﻿# ============================================
 # Collectly 一键部署脚本 (Windows PowerShell)
 # ============================================
 # 支持两种部署模式：
@@ -131,7 +131,7 @@ if (-not $SkipBackend) {
     Set-Location $ProjectRoot
 
     Write-Host "  - 同步虚拟环境和依赖 (uv sync)..."
-    uv sync --inexact
+    uv sync
     if (-not $?) {
         Write-Color Red "  ✗ 同步依赖失败"
         exit 1
@@ -208,13 +208,15 @@ $env:VIRTUAL_ENV = $venvPath
 $env:PATH = "$venvScripts;$env:PATH"
 
 # 启动后端（后台运行）
+$timestamp = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), "China Standard Time").ToString("yyyy-MM-dd_HHmmss")
+$logFile = Join-Path $logDir "backend_$timestamp.log"
 $backendJob = Start-Job -ScriptBlock {
-    param($projectRoot, $backendPort, $venvPath, $venvScripts)
+    param($projectRoot, $backendPort, $venvPath, $venvScripts, $logFile)
     $env:VIRTUAL_ENV = $venvPath
     $env:PATH = "$venvScripts;$env:PATH"
     Set-Location $projectRoot
-    uv run uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --log-level info
-} -ArgumentList $ProjectRoot, $backendPort, $venvPath, $venvScripts
+    uv run uvicorn backend.app.main:app --host 0.0.0.0 --port $backendPort --log-level info 2>&1 | Out-File -FilePath $logFile -Append
+} -ArgumentList $ProjectRoot, $backendPort, $venvPath, $venvScripts, $logFile
 
 Write-Color Green "  ✓ 后端服务已启动（后台运行）"
 Write-Host ""
@@ -292,10 +294,14 @@ if (Test-Path (Join-Path $FrontendDir "dist\index.html")) {
 }
 Write-Host ""
 Write-Host "  管理命令："
-Write-Host "    停止后端：Stop-Job -Id $($backendJob.Id)"
-Write-Host "    查看日志：Get-Content .\logs\app_*.log -Tail 50"
+Write-Host "    查看日志：Get-Content $logFile -Tail 50"
 Write-Host ""
 
-# 等待用户按任意键退出
-Write-Host "按任意键退出..." -NoNewline
+Write-Host "按任意键停止后端并退出..." -NoNewline
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+Write-Host ""
+
+Write-Color Yellow "  正在停止后端服务..."
+Stop-Job -Id $backendJob.Id -ErrorAction SilentlyContinue
+Remove-Job -Id $backendJob.Id -ErrorAction SilentlyContinue
+Write-Color Green "  后端服务已停止"

@@ -200,12 +200,15 @@ if [ ! -d "$LOG_DIR" ]; then
     mkdir -p "$LOG_DIR"
 fi
 
+LOG_FILE="$LOG_DIR/backend_$(TZ='Asia/Shanghai' date '+%Y-%m-%d_%H%M%S').log"
+
 echo "  - 后端服务端口：$BACKEND_PORT"
 echo "  - 日志目录：$LOG_DIR"
+echo "  - 日志文件：$LOG_FILE"
 
 # 启动后端（后台运行）
 cd "$PROJECT_ROOT"
-nohup uv run uvicorn backend.app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" --log-level info > "$LOG_DIR/backend.log" 2>&1 &
+nohup uv run uvicorn backend.app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" --log-level info > "$LOG_FILE" 2>&1 &
 BACKEND_PID=$!
 
 echo -e "${GREEN}  ✓ 后端服务已启动（PID: $BACKEND_PID）${NC}"
@@ -254,5 +257,5 @@ fi
 echo ""
 echo "  管理命令："
 echo "    停止后端：kill $BACKEND_PID"
-echo "    查看日志：tail -f $LOG_DIR/backend.log"
+echo "    查看日志：tail -f $LOG_FILE"
 echo ""
