@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { Link2, Loader2, CheckCircle, AlertCircle, Plus, X, RefreshCw } from 'lucide-react';
+import { Link2, Loader2, CheckCircle, AlertCircle, Plus, X, RefreshCw, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { detectPlatform, getPlatformName, getPlatformIcon, getPlatformColor } from '../utils/platform';
 import { cleanUrls } from '../utils/api';
 import type { Platform } from '../types';
@@ -92,27 +93,23 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
     setLinks(prev => prev.map(link => 
       validUrls.includes(link.url) ? { ...link, status: 'parsing' } : link
     ));
-    setHasParsed(true); // 标记已经开始解析
+    setHasParsed(true);
     onSubmit(validUrls);
   }, [links, onSubmit]);
 
   const clearAll = useCallback(() => {
     setLinks([]);
     setError('');
-    setHasParsed(false); // 重置标记
+    setHasParsed(false);
   }, []);
 
-  // 监听解析完成，更新链接状态
   React.useEffect(() => {
-    // 只有在已经解析过且当前不是解析状态时才清空
     if (hasParsed && !isParsing && links.length > 0) {
-      // 解析完成，更新所有链接状态为 success
       setLinks(prev => prev.map(link => ({
         ...link,
         status: link.status === 'parsing' ? 'success' : link.status
       })));
       
-      // 1.5 秒后清空列表
       const timer = setTimeout(() => {
         clearAll();
         onParsingComplete?.();
@@ -122,14 +119,18 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
   }, [hasParsed, isParsing, links.length, clearAll, onParsingComplete]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-2 sm:p-3">
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+    <div className="w-full max-w-2xl mx-auto p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card p-6"
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
             <Link2 className="w-5 h-5 text-white" />
           </div>
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-gray-900">添加收藏链接</h2>
+          <div>
+            <h2 className="text-lg font-semibold text-white">添加收藏链接</h2>
             <p className="text-sm text-gray-500">支持微信公众号、知乎、CSDN、B站、抖音、小红书</p>
           </div>
         </div>
@@ -139,107 +140,136 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="粘贴链接，每行一个，最多10条..."
-            className="w-full h-24 px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none text-sm"
+            className="input-field h-24 resize-none"
             disabled={isParsing}
           />
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">已添加 {links.length}/10 条</span>
+            <span className="text-xs text-gray-500">已添加 {links.length}/10 条</span>
             <button
               onClick={handleAddLinks}
               disabled={!inputValue.trim() || isParsing || links.length >= 10 || isCleaning}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
             >
-              {isCleaning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {isCleaning ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Plus className="w-4 h-4" />
+              )}
               {isCleaning ? '清理中...' : '添加'}
             </button>
           </div>
         </div>
 
-        {links.length > 0 && (
-          <div className="mt-4 space-y-2">
-            {links.map((link, index) => (
-              <div
-                key={index}
-                className={`flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl border ${
-                  link.status === 'error' ? 'bg-red-50 border-red-200' :
-                  link.status === 'success' ? 'bg-green-50 border-green-200' :
-                  link.status === 'parsing' ? 'bg-blue-50 border-blue-200' :
-                  link.isValid && link.platform ? 'bg-gray-50 border-gray-200' :
-                  'bg-red-50 border-red-200'
-                }`}
-              >
-                <i
-                  className={`${link.platform ? getPlatformIcon(link.platform) : 'fa-solid fa-link'} text-base sm:text-lg flex-shrink-0 mt-0.5`}
-                  style={{ color: link.platform ? getPlatformColor(link.platform) : '#9CA3AF' }}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
-                    {link.platform ? getPlatformName(link.platform) : '未知平台'}
-                  </p>
-                  <p className="text-xs text-gray-500 break-all leading-tight">{link.url}</p>
-                  {link.errorMsg && (
-                    <p className="text-xs text-red-500 mt-1">{link.errorMsg}</p>
-                  )}
-                </div>
-                <div className="flex flex-shrink-0 gap-1">
-                {link.status === 'parsing' ? (
-                  <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-                ) : link.status === 'success' ? (
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                ) : link.status === 'error' ? (
-                  <button
-                    onClick={() => handleRetry(link.url)}
-                    className="p-1 hover:bg-red-200 rounded transition-colors"
-                    title="重试"
-                  >
-                    <RefreshCw className="w-4 h-4 text-red-500" />
-                  </button>
-                ) : link.isValid && link.platform ? (
-                  <CheckCircle className="w-5 h-5 text-gray-300" />
-                ) : (
-                  <AlertCircle className="w-5 h-5 text-red-500" />
-                )}
-                <button
-                  onClick={() => removeLink(index)}
-                  className="p-1 hover:bg-gray-200 rounded transition-colors"
+        <AnimatePresence>
+          {links.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 space-y-2 overflow-hidden"
+            >
+              {links.map((link, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className={`flex items-start gap-3 p-3 rounded-xl border transition-all ${
+                    link.status === 'error' ? 'bg-red-500/10 border-red-500/20' :
+                    link.status === 'success' ? 'bg-green-500/10 border-green-500/20' :
+                    link.status === 'parsing' ? 'bg-blue-500/10 border-blue-500/20' :
+                    link.isValid && link.platform ? 'bg-white/5 border-white/5' :
+                    'bg-red-500/10 border-red-500/20'
+                  }`}
                 >
-                  <X className="w-4 h-4 text-gray-400" />
-                </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: link.platform ? `${getPlatformColor(link.platform)}15` : 'rgba(255,255,255,0.05)' }}
+                  >
+                    <i
+                      className={`${link.platform ? getPlatformIcon(link.platform) : 'fa-solid fa-link'} text-sm`}
+                      style={{ color: link.platform ? getPlatformColor(link.platform) : '#6a6a7a' }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-200 truncate">
+                      {link.platform ? getPlatformName(link.platform) : '未知平台'}
+                    </p>
+                    <p className="text-xs text-gray-500 break-all leading-tight">{link.url}</p>
+                    {link.errorMsg && (
+                      <p className="text-xs text-red-400 mt-1">{link.errorMsg}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-shrink-0 gap-1">
+                  {link.status === 'parsing' ? (
+                    <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                  ) : link.status === 'success' ? (
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                  ) : link.status === 'error' ? (
+                    <button
+                      onClick={() => handleRetry(link.url)}
+                      className="p-1 hover:bg-red-500/20 rounded transition-colors"
+                      title="重试"
+                    >
+                      <RefreshCw className="w-4 h-4 text-red-400" />
+                    </button>
+                  ) : link.isValid && link.platform ? (
+                    <CheckCircle className="w-5 h-5 text-gray-600" />
+                  ) : (
+                    <AlertCircle className="w-5 h-5 text-red-400" />
+                  )}
+                  <button
+                    onClick={() => removeLink(index)}
+                    className="p-1 hover:bg-white/10 rounded transition-colors"
+                  >
+                    <X className="w-4 h-4 text-gray-500" />
+                  </button>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-red-500" />
-            <span className="text-sm text-red-600">{error}</span>
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-2"
+          >
+            <AlertCircle className="w-4 h-4 text-red-400" />
+            <span className="text-sm text-red-400">{error}</span>
+          </motion.div>
         )}
 
         {isParsing && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-xl">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl"
+          >
             <div className="flex items-center gap-3 mb-2">
-              <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-              <span className="text-sm font-medium text-blue-700">正在解析内容...</span>
+              <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+              <span className="text-sm font-medium text-blue-400">正在解析内容...</span>
             </div>
-            <div className="w-full h-2 bg-blue-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                style={{ width: `${parseProgress}%` }}
+            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${parseProgress}%` }}
+                transition={{ duration: 0.3 }}
               />
             </div>
-            <p className="text-xs text-blue-600 mt-1">{parseProgress}% 完成</p>
-          </div>
+            <p className="text-xs text-blue-400/70 mt-1">{parseProgress}% 完成</p>
+          </motion.div>
         )}
 
-        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+        <div className="mt-6 flex items-center gap-3">
           {links.length > 0 && (
             <button
               onClick={clearAll}
               disabled={isParsing}
-              className="px-4 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors"
+              className="btn-secondary px-5 py-2.5 disabled:opacity-40"
             >
               清空
             </button>
@@ -247,16 +277,16 @@ export function LinkInput({ onSubmit, isParsing, parseProgress, parseErrors, onR
           <button
             onClick={handleSubmit}
             disabled={links.length === 0 || isParsing}
-            className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="btn-primary flex-1 flex items-center justify-center gap-2 py-3 disabled:opacity-40"
           >
             {isParsing ? (
               <><Loader2 className="w-4 h-4 animate-spin" />解析中...</>
             ) : (
-              <><Link2 className="w-4 h-4" />开始解析 ({links.filter(l => l.isValid && l.platform).length})</>
+              <><Sparkles className="w-4 h-4" />开始解析 ({links.filter(l => l.isValid && l.platform).length})</>
             )}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

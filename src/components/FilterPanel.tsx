@@ -31,16 +31,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
   const hasActiveFilters = Object.values(filters).some(v => v && (Array.isArray(v) ? v.length > 0 : true));
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div className="glass-card">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors rounded-xl"
       >
         <div className="flex items-center gap-2">
-          <Filter size={18} className="text-blue-500" />
-          <span className="font-medium text-gray-800">筛选条件</span>
+          <Filter size={18} className="text-blue-400" />
+          <span className="font-medium text-white">筛选条件</span>
           {hasActiveFilters && (
-            <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-full">
+            <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">
               已启用
             </span>
           )}
@@ -61,16 +61,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
           >
             <div className="px-4 pb-4 space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">领域</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">领域</label>
                 <div className="flex flex-wrap gap-2">
                   {DOMAINS.map(d => (
                     <button
                       key={d}
                       onClick={() => updateFilter('domains', toggleArrayFilter(filters.domains, d))}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-sm rounded-xl transition-all ${
                         filters.domains?.includes(d)
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10 hover:text-gray-200'
                       }`}
                     >
                       {getDomainName(d)}
@@ -80,16 +80,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">来源平台</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">来源平台</label>
                 <div className="flex flex-wrap gap-2">
                   {PLATFORMS.map(p => (
                     <button
                       key={p}
                       onClick={() => updateFilter('platforms', toggleArrayFilter(filters.platforms, p))}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-sm rounded-xl transition-all ${
                         filters.platforms?.includes(p)
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10 hover:text-gray-200'
                       }`}
                     >
                       {getPlatformName(p)}
@@ -99,16 +99,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">难度</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">难度</label>
                 <div className="flex flex-wrap gap-2">
                   {DIFFICULTIES.map(d => (
                     <button
                       key={d}
                       onClick={() => updateFilter('difficulty', toggleArrayFilter(filters.difficulty, d))}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-sm rounded-xl transition-all ${
                         filters.difficulty?.includes(d)
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10 hover:text-gray-200'
                       }`}
                     >
                       {getDifficultyName(d)}
@@ -118,16 +118,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">内容类型</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">内容类型</label>
                 <div className="flex flex-wrap gap-2">
                   {CONTENT_TYPES.map(t => (
                     <button
                       key={t}
                       onClick={() => updateFilter('contentTypes', toggleArrayFilter(filters.contentTypes, t))}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-sm rounded-xl transition-all ${
                         filters.contentTypes?.includes(t)
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10 hover:text-gray-200'
                       }`}
                     >
                       {getContentTypeName(t)}
@@ -137,16 +137,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">学习状态</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">学习状态</label>
                 <div className="flex flex-wrap gap-2">
                   {STATUSES.map(s => (
                     <button
                       key={s}
                       onClick={() => updateFilter('status', toggleArrayFilter(filters.status, s))}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-sm rounded-xl transition-all ${
                         filters.status?.includes(s)
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10 hover:text-gray-200'
                       }`}
                     >
                       {getStatusName(s)}
@@ -155,10 +155,10 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-2 border-t border-gray-100">
+              <div className="flex gap-2 pt-2 border-t border-white/5">
                 <button
                   onClick={() => onChange({})}
-                  className="flex-1 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                  className="btn-secondary px-5 py-2 text-sm"
                 >
                   重置筛选
                 </button>

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Grid3X3, List, ExternalLink, Bookmark, Clock, Tag } from 'lucide-react';
 import type { KnowledgeItem, ViewMode, SortBy, LearningStatus } from '../types';
 import { getPlatformName, getPlatformIcon, getPlatformColor } from '../utils/platform';
-import { getDifficultyName, getDifficultyColor, getStatusName, getStatusColor, formatDate, truncateText } from '../utils/format';
+import { getDifficultyName, getDifficultyColor, getStatusName, getStatusColor, getDomainName, formatDate, truncateText } from '../utils/format';
 import { Pagination } from './Pagination';
 
 interface KnowledgeListProps {
@@ -38,29 +38,29 @@ export function KnowledgeList({ items, onItemClick, onStatusChange, page, pageSi
     <div className="w-full">
       <div className="flex items-center justify-between mb-4 px-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">共 {total ?? items.length} 条</span>
+          <span className="text-sm text-gray-400">共 {total ?? items.length} 条</span>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortBy)}
-            className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-sm px-3 py-1.5 rounded-xl border border-white/5 bg-white/5 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="created_at">按收藏时间</option>
             <option value="publish_time">按发布时间</option>
           </select>
-          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white/10 text-blue-400' : 'hover:bg-white/5 text-gray-400'}`}
             >
-              <Grid3X3 size={16} className={viewMode === 'grid' ? 'text-blue-600' : 'text-gray-500'} />
+              <Grid3X3 size={16} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white/10 text-blue-400' : 'hover:bg-white/5 text-gray-400'}`}
             >
-              <List size={16} className={viewMode === 'list' ? 'text-blue-600' : 'text-gray-500'} />
+              <List size={16} />
             </button>
           </div>
         </div>
@@ -74,17 +74,22 @@ export function KnowledgeList({ items, onItemClick, onStatusChange, page, pageSi
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             onClick={() => onItemClick(item)}
-            className={`bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden ${viewMode === 'list' ? 'flex items-center gap-4 p-4' : 'p-4'}`}
+            className={`glass-card cursor-pointer overflow-hidden ${viewMode === 'list' ? 'flex items-center gap-4 p-4' : 'p-5'}`}
           >
             <div className={`${viewMode === 'list' ? 'flex-1' : ''}`}>
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <i className={`${getPlatformIcon(item.platform)} text-lg`} style={{ color: getPlatformColor(item.platform) }} />
-                  <span className="text-xs text-gray-500">{getPlatformName(item.platform)}</span>
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${getPlatformColor(item.platform)}15` }}
+                  >
+                    <i className={`${getPlatformIcon(item.platform)} text-sm`} style={{ color: getPlatformColor(item.platform) }} />
+                  </div>
+                  <span className="text-xs text-gray-400">{getPlatformName(item.platform)}</span>
                 </div>
                 <span
-                  className="text-xs px-2 py-0.5 rounded-full font-medium"
-                  style={{ backgroundColor: getStatusColor(item.status) + '20', color: getStatusColor(item.status) }}
+                  className="text-xs px-2.5 py-1 rounded-lg font-medium"
+                  style={{ backgroundColor: getStatusColor(item.status) + '15', color: getStatusColor(item.status) }}
                 >
                   {getStatusName(item.status)}
                 </span>
@@ -95,28 +100,28 @@ export function KnowledgeList({ items, onItemClick, onStatusChange, page, pageSi
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="block font-semibold text-blue-600 hover:text-blue-800 mb-2 line-clamp-2 transition-colors"
+                className="block font-semibold text-white hover:text-blue-400 mb-2 line-clamp-2 transition-colors text-[15px]"
               >
                 {item.title}
               </a>
 
-              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.short_summary}</p>
+              <p className="text-sm text-gray-400 mb-3 line-clamp-2">{truncateText(item.short_summary, 80)}</p>
 
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-1.5 mb-4">
                 <span
-                  className="text-xs px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: getDifficultyColor(item.difficulty) + '20', color: getDifficultyColor(item.difficulty) }}
+                  className="text-xs px-2.5 py-1 rounded-lg"
+                  style={{ backgroundColor: getDifficultyColor(item.difficulty) + '15', color: getDifficultyColor(item.difficulty) }}
                 >
                   {getDifficultyName(item.difficulty)}
                 </span>
                 {item.domains.slice(0, 2).map((domain) => (
-                  <span key={domain} className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
-                    {domain}
+                  <span key={domain} className="text-xs px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400">
+                    {getDomainName(domain)}
                   </span>
                 ))}
               </div>
 
-              <div className="flex items-center justify-between text-xs text-gray-400">
+              <div className="flex items-center justify-between text-xs text-gray-500">
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
                     <Clock size={12} />
@@ -129,7 +134,7 @@ export function KnowledgeList({ items, onItemClick, onStatusChange, page, pageSi
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                  className="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
                 >
                   <ExternalLink size={12} />
                   原文
@@ -154,10 +159,10 @@ export function KnowledgeList({ items, onItemClick, onStatusChange, page, pageSi
       )}
 
       {items.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-          <Bookmark size={48} className="mb-4 opacity-50" />
+        <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+          <Bookmark size={48} className="mb-4 opacity-30" />
           <p>暂无收藏内容</p>
-          <p className="text-sm mt-1">快去添加你的第一条知识吧</p>
+          <p className="text-sm mt-1 text-gray-600">快去添加你的第一条知识吧</p>
         </div>
       )}
     </div>
